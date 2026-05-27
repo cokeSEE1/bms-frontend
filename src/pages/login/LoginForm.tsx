@@ -82,7 +82,7 @@ function LoginForm() {
 
       <BottomLink>
         {loginTexts.no_account}
-        <Link underline>&nbsp;{loginTexts.register}</Link>
+        <Link underline onClick={() => navigate('/register')}>&nbsp;{loginTexts.register}</Link>
       </BottomLink>
     </FormContainer>
   )
