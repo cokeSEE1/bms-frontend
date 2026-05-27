@@ -82,7 +82,7 @@ function LoginForm() {
 
       <BottomLink>
         {loginTexts.no_account}
-        <Link underline="always">&nbsp;{loginTexts.register}</Link>
+        <Link underline>&nbsp;{loginTexts.register}</Link>
       </BottomLink>
     </FormContainer>
   )
