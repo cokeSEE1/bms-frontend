@@ -1,10 +1,11 @@
-// src/pages/home/components/RankingPanel/style.ts
 import styled from '@emotion/styled'
-
-const COLOR_TITLE = 'rgba(0, 14, 26, 0.95)'
-const COLOR_LINK = '#005096'
-const COLOR_META = 'rgba(0, 14, 26, 0.65)'
-const COLOR_COUNT = '#005096'
+import {
+  COLOR_PRIMARY,
+  COLOR_TEXT,
+  COLOR_TEXT_SECONDARY,
+  COLOR_SURFACE_COOL,
+  COLOR_BORDER_COOL,
+} from '../../../../theme/colors'
 
 export const PanelContainer = styled.aside`
   width: 338px;
@@ -23,8 +24,8 @@ export const StarSection = styled.div`
   flex-direction: column;
   gap: 8px;
   padding: 8px 0;
-  background: #f5faff;
-  border: 1px solid #ebf5ff;
+  background: ${COLOR_SURFACE_COOL};
+  border: 1px solid ${COLOR_BORDER_COOL};
   border-radius: 8px;
 `
 
@@ -39,14 +40,14 @@ export const StarTitle = styled.span`
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
   padding: 8px 16px;
 `
 
 export const StarLink = styled.span`
   font-size: 14px;
   line-height: 22px;
-  color: ${COLOR_LINK};
+  color: ${COLOR_PRIMARY};
   cursor: pointer;
 
   &:hover {
@@ -85,20 +86,20 @@ export const RankName = styled.span`
   font-size: 14px;
   font-weight: 600;
   line-height: 22px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
 `
 
 export const RankDept = styled.span`
   font-size: 12px;
   line-height: 18px;
-  color: ${COLOR_META};
+  color: ${COLOR_TEXT_SECONDARY};
 `
 
 export const RankCount = styled.span`
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
-  color: ${COLOR_COUNT};
+  color: ${COLOR_PRIMARY};
   flex-shrink: 0;
 `
 
@@ -120,7 +121,7 @@ export const NotifTitle = styled.span`
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
   padding: 8px 16px;
 `
 
@@ -150,7 +151,7 @@ export const NotifInner = styled.div`
 export const NotifText = styled.span<{ isRead: boolean }>`
   font-size: 14px;
   line-height: 22px;
-  color: ${({ isRead }) => (isRead ? COLOR_META : COLOR_TITLE)};
+  color: ${({ isRead }) => (isRead ? COLOR_TEXT_SECONDARY : COLOR_TEXT)};
   flex: 1;
 `
 
@@ -160,5 +161,5 @@ export const NotifInfo = styled.div`
   gap: 4px;
   font-size: 12px;
   line-height: 18px;
-  color: ${COLOR_META};
+  color: ${COLOR_TEXT_SECONDARY};
 `
