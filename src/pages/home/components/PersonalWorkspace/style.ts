@@ -35,8 +35,9 @@ export const DataSection = styled.div`
   gap: 8px;
   padding: 0 16px 0 0;
   border-right: 1px solid ${COLOR_BORDER_WARM};
-  width: 492px;
-  flex-shrink: 0;
+  flex: 0 0 492px;
+  max-width: 492px;
+  min-width: 360px;
 `
 
 export const DataHeader = styled.div`
