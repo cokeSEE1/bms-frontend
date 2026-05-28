@@ -1,11 +1,13 @@
-// src/pages/home/components/PersonalWorkspace/style.ts
 import styled from '@emotion/styled'
-
-const COLOR_TITLE = 'rgba(0, 14, 26, 0.95)'
-const COLOR_LINK = '#005096'
-const COLOR_BORDER = '#EBEDF2'
-const COLOR_CARD_BG = '#F5FAFF'
-const COLOR_CARD_BORDER = '#EBF5FF'
+import {
+  COLOR_PRIMARY,
+  COLOR_TEXT,
+  COLOR_BORDER_WARM,
+  COLOR_SURFACE_WARM,
+  COLOR_BORDER_COOL,
+  COLOR_BTN_GRADIENT_START,
+  COLOR_BTN_GRADIENT_END,
+} from '../../../../theme/colors'
 
 export const Container = styled.div`
   display: flex;
@@ -18,7 +20,7 @@ export const Title = styled.div`
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
   padding: 8px 16px;
 `
 
@@ -32,7 +34,7 @@ export const DataSection = styled.div`
   flex-direction: column;
   gap: 8px;
   padding: 0 16px 0 0;
-  border-right: 1px solid ${COLOR_BORDER};
+  border-right: 1px solid ${COLOR_BORDER_WARM};
   width: 492px;
   flex-shrink: 0;
 `
@@ -47,13 +49,13 @@ export const DataTitle = styled.span`
   font-size: 14px;
   font-weight: 600;
   line-height: 22px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
 `
 
 export const DetailLink = styled.span`
   font-size: 14px;
   line-height: 22px;
-  color: ${COLOR_LINK};
+  color: ${COLOR_PRIMARY};
   cursor: pointer;
 
   &:hover {
@@ -82,7 +84,7 @@ export const StatValue = styled.span`
   font-size: 24px;
   font-weight: 700;
   line-height: 32px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
 `
 
 export const StatLabel = styled.span`
@@ -101,7 +103,7 @@ export const CreateBtn = styled.button`
   padding: 4px 12px;
   border: none;
   border-radius: 2px;
-  background: linear-gradient(90deg, #0065fd 0%, #3082fd 100%);
+  background: linear-gradient(90deg, ${COLOR_BTN_GRADIENT_START} 0%, ${COLOR_BTN_GRADIENT_END} 100%);
   color: #ffffff;
   font-size: 14px;
   line-height: 22px;
@@ -132,7 +134,7 @@ export const PartTitle = styled.span`
   font-size: 14px;
   font-weight: 600;
   line-height: 22px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
 `
 
 export const PartGrid = styled.div`
@@ -148,8 +150,8 @@ export const PartCard = styled.div`
   flex-direction: column;
   gap: 8px;
   padding: 8px 16px;
-  background: ${COLOR_CARD_BG};
-  border: 1px solid ${COLOR_CARD_BORDER};
+  background: ${COLOR_SURFACE_WARM};
+  border: 1px solid ${COLOR_BORDER_COOL};
   border-radius: 8px;
 `
 
@@ -157,7 +159,7 @@ export const PartCardTitle = styled.span`
   font-size: 14px;
   font-weight: 600;
   line-height: 22px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
 `
 
 export const PartCardDesc = styled.span`
