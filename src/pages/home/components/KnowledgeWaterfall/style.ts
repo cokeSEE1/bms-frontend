@@ -1,12 +1,14 @@
 // src/pages/home/components/KnowledgeWaterfall/style.ts
 import styled from '@emotion/styled'
-
-const COLOR_TITLE = 'rgba(0, 14, 26, 0.95)'
-const COLOR_ACTIVE = '#005096'
-const COLOR_INACTIVE = 'rgba(0, 14, 26, 0.45)'
-const COLOR_CARD_BG = '#FFFFFF'
-const COLOR_CARD_BORDER = '#EBF5FF'
-const COLOR_META = 'rgba(0, 14, 26, 0.45)'
+import {
+  COLOR_PRIMARY,
+  COLOR_TEXT,
+  COLOR_TEXT_SECONDARY,
+  COLOR_BG_CONTAINER,
+  COLOR_PLACEHOLDER,
+  COLOR_SURFACE_COOL,
+  COLOR_BORDER_COOL,
+} from '../../../../theme/colors'
 
 export const Container = styled.div`
   flex: 1;
@@ -14,8 +16,8 @@ export const Container = styled.div`
   flex-direction: column;
   gap: 8px;
   padding: 8px 8px 32px;
-  background: #f5faff;
-  border: 1px solid ${COLOR_CARD_BORDER};
+  background: ${COLOR_SURFACE_COOL};
+  border: 1px solid ${COLOR_BORDER_COOL};
   border-radius: 8px;
   min-height: 0;
 `
@@ -31,7 +33,7 @@ export const Title = styled.span`
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
   padding: 8px 16px;
 `
 
@@ -50,7 +52,7 @@ export const SortTab = styled.button<{ active: boolean }>`
   border: none;
   background: none;
   cursor: pointer;
-  color: ${({ active }) => (active ? COLOR_ACTIVE : COLOR_INACTIVE)};
+  color: ${({ active }) => (active ? COLOR_PRIMARY : COLOR_PLACEHOLDER)};
   font-size: 14px;
   line-height: 22px;
 
@@ -59,12 +61,12 @@ export const SortTab = styled.button<{ active: boolean }>`
     display: ${({ active }) => (active ? 'block' : 'none')};
     width: 100%;
     height: 2px;
-    background: ${COLOR_ACTIVE};
+    background: ${COLOR_PRIMARY};
     border-radius: 2px;
   }
 
   &:hover {
-    color: ${COLOR_ACTIVE};
+    color: ${COLOR_PRIMARY};
   }
 `
 
@@ -81,8 +83,8 @@ export const Card = styled.article`
   flex-direction: column;
   gap: 4px;
   padding: 16px;
-  background: ${COLOR_CARD_BG};
-  border: 1px solid ${COLOR_CARD_BORDER};
+  background: ${COLOR_BG_CONTAINER};
+  border: 1px solid ${COLOR_BORDER_COOL};
   border-radius: 8px;
 `
 
@@ -110,14 +112,14 @@ export const CardTitleText = styled.a`
   font-size: 14px;
   font-weight: 600;
   line-height: 22px;
-  color: ${COLOR_TITLE};
+  color: ${COLOR_TEXT};
   text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 
   &:hover {
-    color: ${COLOR_ACTIVE};
+    color: ${COLOR_PRIMARY};
   }
 `
 
@@ -145,7 +147,7 @@ export const MetaItem = styled.span`
   gap: 4px;
   font-size: 12px;
   line-height: 18px;
-  color: ${COLOR_META};
+  color: ${COLOR_TEXT_SECONDARY};
 `
 
 export const EmptyWrapper = styled.div`
