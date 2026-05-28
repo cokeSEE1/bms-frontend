@@ -30,6 +30,8 @@ const home = {
     mostLikes: '最多点赞',
     latest: '最新发布',
     empty: '暂无知识内容',
+    searchResult: '搜索结果',
+    clearSearch: '清除',
   },
   ranking: {
     knowledgeStar: '知识之星（7月）',

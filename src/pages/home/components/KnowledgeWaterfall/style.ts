@@ -156,3 +156,34 @@ export const EmptyWrapper = styled.div`
   align-items: center;
   justify-content: center;
 `
+
+export const SearchIndicator = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(26, 58, 74, 0.06);
+  border-radius: 8px;
+  flex-shrink: 0;
+`
+
+export const SearchInfo = styled.span`
+  font-size: 14px;
+  line-height: 22px;
+  color: rgba(0, 14, 26, 0.65);
+`
+
+export const ClearButton = styled.button`
+  border: none;
+  background: none;
+  color: #1a3a4a;
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(26, 58, 74, 0.08);
+  }
+`

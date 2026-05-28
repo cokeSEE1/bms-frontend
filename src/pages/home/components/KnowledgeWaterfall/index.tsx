@@ -5,6 +5,7 @@ import { Empty, Spin, Tag } from 'antd'
 import { UserOutlined, ClockCircleOutlined, EyeOutlined, LikeOutlined, LockOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { knowledgeStore } from '../../../../stores/knowledgeStore'
+import { homeStore } from '../../../../stores/homeStore'
 import home from '../../../../i18n/locales/zh-CN/home'
 import type { KnowledgeCard } from '../../../../service/home'
 import docRichtextIcon from '../../../../assets/icons/doc-richtext.svg'
@@ -28,6 +29,9 @@ import {
   MetaRight,
   MetaItem,
   EmptyWrapper,
+  SearchIndicator,
+  SearchInfo,
+  ClearButton,
 } from './style'
 
 const SORT_OPTIONS: { key: typeof knowledgeStore.sortBy; label: string }[] = [
@@ -119,13 +123,28 @@ function KnowledgeWaterfall() {
       </Header>
 
       <Spin spinning={knowledgeStore.loading}>
-        {knowledgeStore.cards.length === 0 ? (
+        {knowledgeStore.searchQuery && (
+          <SearchIndicator>
+            <SearchInfo>
+              {home.waterfall.searchResult}：{knowledgeStore.filteredCards.length} 条
+            </SearchInfo>
+            <ClearButton
+              onClick={() => {
+                knowledgeStore.clearSearch()
+                homeStore.setSearchKeyword('')
+              }}
+            >
+              {home.waterfall.clearSearch}
+            </ClearButton>
+          </SearchIndicator>
+        )}
+        {knowledgeStore.filteredCards.length === 0 ? (
           <EmptyWrapper>
             <Empty description={home.waterfall.empty} />
           </EmptyWrapper>
         ) : (
           <CardList>
-            {knowledgeStore.cards.map((card) => <KnowledgeCardItem key={card.id} card={card} />)}
+            {knowledgeStore.filteredCards.map((card) => <KnowledgeCardItem key={card.id} card={card} />)}
           </CardList>
         )}
       </Spin>
