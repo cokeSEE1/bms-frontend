@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { App } from 'antd'
@@ -7,6 +7,8 @@ import DashboardLayout from '../../../layouts/DashboardLayout'
 import HomePage from '../index'
 import { knowledgeStore } from '../../../stores/knowledgeStore'
 import { rankingStore } from '../../../stores/rankingStore'
+import { homeStore } from '../../../stores/homeStore'
+import home from '../../../i18n/locales/zh-CN/home'
 
 function renderHomePage() {
   return render(
@@ -32,6 +34,8 @@ describe('HomePage', () => {
       knowledgeStore.cards = []
       knowledgeStore.loading = false
       knowledgeStore.sortBy = 'recommend'
+      knowledgeStore.searchQuery = ''
+      homeStore.searchKeyword = ''
       rankingStore.studyStars = []
       rankingStore.originalStars = []
       rankingStore.hotStars = []
@@ -116,5 +120,96 @@ describe('HomePage', () => {
     const likesTab = screen.getByText('最多点赞')
     await user.click(likesTab)
     expect(knowledgeStore.sortBy).toBe('likes')
+  })
+
+  it('sets searchQuery on knowledgeStore when Enter is pressed', async () => {
+    renderHomePage()
+
+    const searchInput = screen.getByPlaceholderText(home.header.searchPlaceholder)
+    fireEvent.change(searchInput, { target: { value: 'react' } })
+    expect(homeStore.searchKeyword).toBe('react')
+
+    fireEvent.keyDown(searchInput, { key: 'Enter', code: 'Enter' })
+
+    expect(knowledgeStore.searchQuery).toBe('react')
+  })
+
+  it('clears searchQuery when user types after a search', async () => {
+    renderHomePage()
+
+    const searchInput = screen.getByPlaceholderText(home.header.searchPlaceholder)
+    fireEvent.change(searchInput, { target: { value: 'react' } })
+    fireEvent.keyDown(searchInput, { key: 'Enter', code: 'Enter' })
+    expect(knowledgeStore.searchQuery).toBe('react')
+
+    fireEvent.change(searchInput, { target: { value: 'new search' } })
+    expect(knowledgeStore.searchQuery).toBe('')
+  })
+
+  it('shows search indicator with result count when searchQuery is set', async () => {
+    runInAction(() => {
+      knowledgeStore.cards = [
+        {
+          id: '1',
+          title: 'React 入门指南',
+          description: 'React 基础知识',
+          tags: ['置顶'],
+          docType: 'richtext' as const,
+          author: { name: '张三' },
+          views: 100,
+          likes: 10,
+          createdAt: '2026-05-20T08:00:00Z',
+          isLocked: false,
+        },
+        {
+          id: '2',
+          title: 'Vue 高级教程',
+          description: 'Vue 进阶内容',
+          tags: [],
+          docType: 'pdf' as const,
+          author: { name: '李四' },
+          views: 50,
+          likes: 5,
+          createdAt: '2026-05-21T08:00:00Z',
+          isLocked: false,
+        },
+      ]
+      knowledgeStore.searchQuery = 'react'
+    })
+    renderHomePage()
+    await waitFor(() => {
+      expect(screen.getByText(/搜索结果/)).toBeInTheDocument()
+      expect(screen.getByText(/1 条/)).toBeInTheDocument()
+      expect(screen.getByText('React 入门指南')).toBeInTheDocument()
+    })
+  })
+
+  it('clears search and hides indicator when clear button is clicked', async () => {
+    const user = userEvent.setup()
+    runInAction(() => {
+      knowledgeStore.cards = [
+        {
+          id: '1',
+          title: 'React 入门指南',
+          description: 'React 基础知识',
+          tags: [],
+          docType: 'richtext' as const,
+          author: { name: '张三' },
+          views: 100,
+          likes: 10,
+          createdAt: '2026-05-20T08:00:00Z',
+          isLocked: false,
+        },
+      ]
+      knowledgeStore.searchQuery = 'react'
+    })
+    renderHomePage()
+    await waitFor(() => {
+      expect(screen.getByText(/搜索结果/)).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByRole('button', { name: home.waterfall.clearSearch }))
+    expect(knowledgeStore.searchQuery).toBe('')
+    expect(homeStore.searchKeyword).toBe('')
   })
 })

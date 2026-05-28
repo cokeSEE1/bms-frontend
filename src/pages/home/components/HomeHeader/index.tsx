@@ -6,6 +6,7 @@ import { UserOutlined, LogoutOutlined, FolderOutlined, SearchOutlined, CaretDown
 import { useLogout } from '../../../../service'
 import home from '../../../../i18n/locales/zh-CN/home'
 import { homeStore } from '../../../../stores/homeStore'
+import { knowledgeStore } from '../../../../stores/knowledgeStore'
 import logoUrl from '../../../../assets/logo.svg'
 import {
   HeaderBar,
@@ -71,8 +72,13 @@ function HomeHeader() {
           prefix={<SearchOutlined />}
           placeholder={home.header.searchPlaceholder}
           value={homeStore.searchKeyword}
-          onChange={(e) => homeStore.setSearchKeyword(e.target.value)}
-          onPressEnter={() => {}}
+          onChange={(e) => {
+            homeStore.setSearchKeyword(e.target.value)
+            if (knowledgeStore.searchQuery) {
+              knowledgeStore.clearSearch()
+            }
+          }}
+          onPressEnter={() => knowledgeStore.setSearchQuery(homeStore.searchKeyword)}
           variant="borderless"
         />
       </SearchWrapper>
