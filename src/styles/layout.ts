@@ -22,6 +22,8 @@ export const SidebarArea = styled.div`
 
 export const MainArea = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
   min-width: 0;
   overflow: hidden;
 `
