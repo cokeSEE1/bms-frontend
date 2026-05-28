@@ -1,7 +1,7 @@
 // src/pages/home/components/KnowledgeWaterfall/index.tsx
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
-import { Empty, Spin, Tag } from 'antd'
+import { Button, Empty, Spin, Tag } from 'antd'
 import { UserOutlined, ClockCircleOutlined, EyeOutlined, LikeOutlined, LockOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { knowledgeStore } from '../../../../stores/knowledgeStore'
@@ -48,7 +48,7 @@ const TAG_COLORS: Record<string, string> = {
   '第三方系统': 'geekblue',
 }
 
-function KnowledgeCardItem({ card }: { card: KnowledgeCard }) {
+const KnowledgeCardItem = React.memo(function KnowledgeCardItem({ card }: { card: KnowledgeCard }) {
   return (
     <Card>
       <CardTop>
@@ -91,7 +91,7 @@ function KnowledgeCardItem({ card }: { card: KnowledgeCard }) {
       </CardMeta>
     </Card>
   )
-}
+})
 
 const DOC_ICON_MAP: Record<KnowledgeCard['docType'], string> = {
   richtext: docRichtextIcon,
@@ -140,7 +140,9 @@ function KnowledgeWaterfall() {
         )}
         {knowledgeStore.filteredCards.length === 0 ? (
           <EmptyWrapper>
-            <Empty description={home.waterfall.empty} />
+            <Empty description={home.waterfall.empty}>
+              <Button type="primary">{home.workspace.createKnowledge}</Button>
+            </Empty>
           </EmptyWrapper>
         ) : (
           <CardList>
