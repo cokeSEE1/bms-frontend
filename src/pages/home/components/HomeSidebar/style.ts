@@ -186,7 +186,7 @@ export const TreeItem = styled.div<{ level: number; selected: boolean }>`
 
   &:hover {
     color: ${COLOR_PRIMARY};
-    background: rgba(0, 80, 150, 0.04);
+    background: rgba(26, 58, 74, 0.04);
   }
 
   img {
