@@ -79,9 +79,7 @@ function CatalogNode({ node, level }: CatalogNodeProps) {
         {!hasChildren && <span style={{ width: 20, flexShrink: 0 }} />}
         <img src={expanded && hasChildren ? folderOpenIcon : isFileNode ? fileIcon : folderIcon} alt="" />
         <TreeItemText>{node.title}</TreeItemText>
-        {(node as TreeNode & { tag?: string }).tag && (
-          <TreeItemTag>{(node as TreeNode & { tag?: string }).tag}</TreeItemTag>
-        )}
+        {node.tag && <TreeItemTag>{node.tag}</TreeItemTag>}
       </TreeItem>
       {hasChildren && expanded && node.children!.map((child) => (
         <CatalogNode key={child.key} node={child} level={level + 1} />

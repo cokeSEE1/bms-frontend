@@ -1,4 +1,6 @@
 // src/service/home.ts
+import client from './client'
+
 export interface KnowledgeCard {
   id: string
   title: string
@@ -30,6 +32,16 @@ export interface TreeNode {
   title: string
   key: string
   children?: TreeNode[]
+  tag?: string
+}
+
+interface DirectoryTreeNodeBackend {
+  id: number
+  dir_name: string
+  dir_type: number
+  level: number
+  parent_id: number | null
+  children: DirectoryTreeNodeBackend[]
 }
 
 const mockCards: KnowledgeCard[] = [
@@ -95,34 +107,6 @@ const mockCards: KnowledgeCard[] = [
   },
 ]
 
-const mockDirectoryTree: TreeNode[] = [
-  {
-    title: '知识仓库',
-    key: '0-0',
-    children: [
-      {
-        title: '技术文档',
-        key: '0-0-0',
-        children: [
-          { title: '前端开发', key: '0-0-0-0' },
-          { title: '后端开发', key: '0-0-0-1' },
-          { title: 'AI与算法', key: '0-0-0-2' },
-        ],
-      },
-      {
-        title: '产品设计',
-        key: '0-0-1',
-        children: [
-          { title: '需求文档', key: '0-0-1-0' },
-          { title: '设计规范', key: '0-0-1-1' },
-        ],
-      },
-      { title: '运营与市场', key: '0-0-2' },
-      { title: '行政管理', key: '0-0-3' },
-    ],
-  },
-]
-
 const mockStudyStars: RankUser[] = [
   { rank: 1, name: '张伟', department: '技术部', count: 328 },
   { rank: 2, name: '李娜', department: '产品部', count: 256 },
@@ -158,8 +142,21 @@ export async function getKnowledgeCards(_params: GetKnowledgeCardsParams): Promi
   return Promise.resolve(mockCards)
 }
 
+function mapDirectoryTreeNode(backendNode: DirectoryTreeNodeBackend): TreeNode {
+  return {
+    title: backendNode.dir_name,
+    key: String(backendNode.id),
+    tag: backendNode.dir_type === 1 ? '分组' : undefined,
+    children: backendNode.children?.map(mapDirectoryTreeNode),
+  }
+}
+
 export async function getDirectoryTree(): Promise<TreeNode[]> {
-  return Promise.resolve(mockDirectoryTree)
+  const { data } = await client.post<DirectoryTreeNodeBackend>('/v1/directory/tree', {
+    dir_id: 0,
+    level: -1,
+  })
+  return [mapDirectoryTreeNode(data)]
 }
 
 export async function getStudyStars(): Promise<RankUser[]> {
