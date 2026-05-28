@@ -2,7 +2,7 @@
 
 ## Project
 
-BMS (Book Management System) Frontend — React 18 SPA with TypeScript, Vite 6, Ant Design 5, Emotion, React Router 6, pnpm.
+KMS (Knowledge Management System) Frontend — React 18 SPA with TypeScript, Vite 6, Ant Design 5, Emotion, React Router 6, pnpm.
 
 ## Commands
 
