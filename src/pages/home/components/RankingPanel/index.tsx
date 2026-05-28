@@ -1,39 +1,57 @@
 // src/pages/home/components/RankingPanel/index.tsx
 import { useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
-import { Badge } from 'antd'
 import { rankingStore } from '../../../../stores/rankingStore'
 import home from '../../../../i18n/locales/zh-CN/home'
 import type { RankUser } from '../../../../service/home'
+import medalStudyIcon from '../../../../assets/icons/medal-study.svg'
+import medalOriginalIcon from '../../../../assets/icons/medal-original.svg'
+import medalHotIcon from '../../../../assets/icons/medal-hot.svg'
 import {
   PanelContainer,
-  Section,
-  SectionTitle,
+  StarSection,
+  StarHeader,
+  StarTitle,
+  StarLink,
+  StarContent,
   RankItem,
-  RankBadge,
+  MedalIcon,
   RankInfo,
   RankName,
   RankDept,
   RankCount,
+  NotifSection,
+  NotifHeader,
+  NotifTitle,
+  NotifList,
   NotifItem,
-  NotifTime,
+  NotifInner,
+  NotifText,
+  NotifInfo,
 } from './style'
 
-function RankList({ title, users }: { title: string; users: RankUser[] }) {
+const MEDAL_ICONS: Record<string, string> = {
+  studyStar: medalStudyIcon,
+  originalStar: medalOriginalIcon,
+  hotStar: medalHotIcon,
+}
+
+const RANK_SECTIONS: { key: 'studyStars' | 'originalStars' | 'hotStars'; title: string }[] = [
+  { key: 'studyStars', title: home.ranking.studyStar },
+  { key: 'originalStars', title: home.ranking.originalStar },
+  { key: 'hotStars', title: home.ranking.hotStar },
+]
+
+function RankUserItem({ user, sectionKey }: { user: RankUser; sectionKey: string }) {
   return (
-    <Section>
-      <SectionTitle>{title}</SectionTitle>
-      {users.map((user) => (
-        <RankItem key={user.rank}>
-          <RankBadge rank={user.rank}>{user.rank}</RankBadge>
-          <RankInfo>
-            <RankName>{user.name}</RankName>
-            <RankDept>{user.department}</RankDept>
-          </RankInfo>
-          <RankCount>{user.count}</RankCount>
-        </RankItem>
-      ))}
-    </Section>
+    <RankItem>
+      <MedalIcon src={MEDAL_ICONS[sectionKey]} alt="" />
+      <RankInfo>
+        <RankName>{user.name}</RankName>
+        <RankDept>{user.department}</RankDept>
+      </RankInfo>
+      <RankCount>{user.count}</RankCount>
+    </RankItem>
   )
 }
 
@@ -44,28 +62,42 @@ function RankingPanel() {
 
   return (
     <PanelContainer>
-      <RankList title={home.ranking.studyStar} users={rankingStore.studyStars} />
-      <RankList title={home.ranking.originalStar} users={rankingStore.originalStars} />
-      <RankList title={home.ranking.hotStar} users={rankingStore.hotStars} />
+      <StarSection>
+        <StarHeader>
+          <StarTitle>{home.ranking.knowledgeStar}</StarTitle>
+          <StarLink>{home.ranking.learnMore}</StarLink>
+        </StarHeader>
+        <StarContent>
+          {RANK_SECTIONS.map((section) => {
+            const users = rankingStore[section.key]
+            if (users.length === 0) return null
+            return (
+              <RankUserItem
+                key={section.key}
+                user={users[0]}
+                sectionKey={section.key}
+              />
+            )
+          })}
+        </StarContent>
+      </StarSection>
 
-      <Section>
-        <SectionTitle>
-          {home.ranking.notification}
-          {rankingStore.notifications.some((n) => !n.isRead) && (
-            <Badge
-              count={rankingStore.notifications.filter((n) => !n.isRead).length}
-              size="small"
-              style={{ marginLeft: 8 }}
-            />
-          )}
-        </SectionTitle>
-        {rankingStore.notifications.map((item) => (
-          <NotifItem key={item.id} isRead={item.isRead}>
-            {item.title}
-            <NotifTime>{item.time}</NotifTime>
-          </NotifItem>
-        ))}
-      </Section>
+      <NotifSection>
+        <NotifHeader>
+          <NotifTitle>{home.ranking.notification}</NotifTitle>
+          <StarLink>{home.ranking.viewAll}</StarLink>
+        </NotifHeader>
+        <NotifList>
+          {rankingStore.notifications.map((item) => (
+            <NotifItem key={item.id}>
+              <NotifInner>
+                <NotifText isRead={item.isRead}>{item.title}</NotifText>
+              </NotifInner>
+              <NotifInfo>{item.time}</NotifInfo>
+            </NotifItem>
+          ))}
+        </NotifList>
+      </NotifSection>
     </PanelContainer>
   )
 }

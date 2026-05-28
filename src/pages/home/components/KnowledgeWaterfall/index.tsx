@@ -2,32 +2,32 @@
 import { useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
 import { Empty, Spin, Tag } from 'antd'
-import {
-  FileTextOutlined,
-  FilePdfOutlined,
-  FileWordOutlined,
-  FileExcelOutlined,
-  LockOutlined,
-  UserOutlined,
-  ClockCircleOutlined,
-  EyeOutlined,
-  LikeOutlined,
-} from '@ant-design/icons'
+import { UserOutlined, ClockCircleOutlined, EyeOutlined, LikeOutlined, LockOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { knowledgeStore } from '../../../../stores/knowledgeStore'
 import home from '../../../../i18n/locales/zh-CN/home'
 import type { KnowledgeCard } from '../../../../service/home'
+import docRichtextIcon from '../../../../assets/icons/doc-richtext.svg'
+import docPdfIcon from '../../../../assets/icons/doc-pdf.svg'
+import docWordIcon from '../../../../assets/icons/doc-word.svg'
+import docExcelIcon from '../../../../assets/icons/doc-excel.svg'
 import {
-  WaterfallContainer,
+  Container,
+  Header,
+  Title,
   SortTabs,
   SortTab,
   CardList,
   Card,
-  CardTags,
-  CardTitle,
-  CardDesc,
+  CardTop,
+  DocIcon,
+  CardTitleArea,
+  CardTitleText,
   CardMeta,
+  MetaLeft,
+  MetaRight,
   MetaItem,
+  EmptyWrapper,
 } from './style'
 
 const SORT_OPTIONS: { key: typeof knowledgeStore.sortBy; label: string }[] = [
@@ -44,51 +44,56 @@ const TAG_COLORS: Record<string, string> = {
   '第三方系统': 'geekblue',
 }
 
-const DOC_ICON_MAP: Record<KnowledgeCard['docType'], React.ReactNode> = {
-  richtext: <FileTextOutlined />,
-  pdf: <FilePdfOutlined />,
-  word: <FileWordOutlined />,
-  excel: <FileExcelOutlined />,
-}
-
 function KnowledgeCardItem({ card }: { card: KnowledgeCard }) {
   return (
     <Card>
-      <CardTags>
-        {card.tags.map((tag) => (
-          <Tag key={tag} color={TAG_COLORS[tag] || 'default'}>
-            {tag}
-          </Tag>
-        ))}
-      </CardTags>
-      <CardTitle href="#">{card.title}</CardTitle>
-      <CardDesc>{card.description}</CardDesc>
+      <CardTop>
+        <DocIcon src={DOC_ICON_MAP[card.docType]} alt="" />
+        <CardTitleArea>
+          <CardTitleText href="#">{card.title}</CardTitleText>
+          {card.tags.map((tag) => (
+            <Tag key={tag} color={TAG_COLORS[tag] || 'default'} style={{ margin: 0, flexShrink: 0 }}>
+              {tag}
+            </Tag>
+          ))}
+        </CardTitleArea>
+      </CardTop>
       <CardMeta>
-        <MetaItem>{DOC_ICON_MAP[card.docType]}</MetaItem>
-        <MetaItem>
-          <UserOutlined />
-          {card.author.name}
-        </MetaItem>
-        <MetaItem>
-          <ClockCircleOutlined />
-          {dayjs(card.createdAt).format('YYYY-MM-DD')}
-        </MetaItem>
-        <MetaItem>
-          <EyeOutlined />
-          {card.views}
-        </MetaItem>
-        <MetaItem>
-          <LikeOutlined />
-          {card.likes}
-        </MetaItem>
-        {card.isLocked && (
+        <MetaLeft>
           <MetaItem>
-            <LockOutlined />
+            <UserOutlined />
+            {card.author.name}
           </MetaItem>
-        )}
+          <MetaItem>
+            <ClockCircleOutlined />
+            {dayjs(card.createdAt).format('YYYY-MM-DD')}
+          </MetaItem>
+        </MetaLeft>
+        <MetaRight>
+          <MetaItem>
+            <EyeOutlined />
+            {card.views}
+          </MetaItem>
+          <MetaItem>
+            <LikeOutlined />
+            {card.likes}
+          </MetaItem>
+          {card.isLocked && (
+            <MetaItem>
+              <LockOutlined />
+            </MetaItem>
+          )}
+        </MetaRight>
       </CardMeta>
     </Card>
   )
+}
+
+const DOC_ICON_MAP: Record<KnowledgeCard['docType'], string> = {
+  richtext: docRichtextIcon,
+  pdf: docPdfIcon,
+  word: docWordIcon,
+  excel: docExcelIcon,
 }
 
 function KnowledgeWaterfall() {
@@ -97,29 +102,34 @@ function KnowledgeWaterfall() {
   }, [knowledgeStore.sortBy])
 
   return (
-    <WaterfallContainer>
-      <SortTabs>
-        {SORT_OPTIONS.map((opt) => (
-          <SortTab
-            key={opt.key}
-            active={knowledgeStore.sortBy === opt.key}
-            onClick={() => knowledgeStore.setSortBy(opt.key)}
-          >
-            {opt.label}
-          </SortTab>
-        ))}
-      </SortTabs>
+    <Container>
+      <Header>
+        <Title>{home.waterfall.title}</Title>
+        <SortTabs>
+          {SORT_OPTIONS.map((opt) => (
+            <SortTab
+              key={opt.key}
+              active={knowledgeStore.sortBy === opt.key}
+              onClick={() => knowledgeStore.setSortBy(opt.key)}
+            >
+              {opt.label}
+            </SortTab>
+          ))}
+        </SortTabs>
+      </Header>
 
       <Spin spinning={knowledgeStore.loading}>
-        <CardList>
-          {knowledgeStore.cards.length === 0 ? (
+        {knowledgeStore.cards.length === 0 ? (
+          <EmptyWrapper>
             <Empty description={home.waterfall.empty} />
-          ) : (
-            knowledgeStore.cards.map((card) => <KnowledgeCardItem key={card.id} card={card} />)
-          )}
-        </CardList>
+          </EmptyWrapper>
+        ) : (
+          <CardList>
+            {knowledgeStore.cards.map((card) => <KnowledgeCardItem key={card.id} card={card} />)}
+          </CardList>
+        )}
       </Spin>
-    </WaterfallContainer>
+    </Container>
   )
 }
 

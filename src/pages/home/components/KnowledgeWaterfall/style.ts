@@ -1,37 +1,70 @@
 // src/pages/home/components/KnowledgeWaterfall/style.ts
 import styled from '@emotion/styled'
-import {
-  COLOR_TEXT,
-  COLOR_TEXT_SECONDARY,
-  COLOR_PRIMARY,
-  COLOR_BG_CONTAINER,
-  COLOR_LINK,
-} from '../../../../theme/colors'
 
-export const WaterfallContainer = styled.div`
-  height: 100%;
+const COLOR_TITLE = 'rgba(0, 14, 26, 0.95)'
+const COLOR_ACTIVE = '#005096'
+const COLOR_INACTIVE = 'rgba(0, 14, 26, 0.45)'
+const COLOR_CARD_BG = '#FFFFFF'
+const COLOR_CARD_BORDER = '#EBF5FF'
+const COLOR_META = 'rgba(0, 14, 26, 0.45)'
+
+export const Container = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  padding: 8px 8px 32px;
+  background: #f5faff;
+  border: 1px solid ${COLOR_CARD_BORDER};
+  border-radius: 8px;
+  min-height: 0;
+`
+
+export const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px 0 0;
+`
+
+export const Title = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+  color: ${COLOR_TITLE};
+  padding: 8px 16px;
 `
 
 export const SortTabs = styled.div`
   display: flex;
-  gap: 4px;
-  margin-bottom: 16px;
+  align-items: flex-end;
+  gap: 16px;
 `
 
 export const SortTab = styled.button<{ active: boolean }>`
-  padding: 6px 16px;
-  border: 1px solid ${({ active }) => (active ? COLOR_PRIMARY : 'transparent')};
-  border-radius: 6px;
-  background: ${({ active }) => (active ? 'rgba(26, 58, 74, 0.08)' : 'transparent')};
-  color: ${({ active }) => (active ? COLOR_PRIMARY : COLOR_TEXT_SECONDARY)};
-  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: ${({ active }) => (active ? '8px 8px 0' : '8px 8px 7px')};
+  border: none;
+  background: none;
   cursor: pointer;
-  transition: all 0.2s;
+  color: ${({ active }) => (active ? COLOR_ACTIVE : COLOR_INACTIVE)};
+  font-size: 14px;
+  line-height: 22px;
+
+  &::after {
+    content: '';
+    display: ${({ active }) => (active ? 'block' : 'none')};
+    width: 100%;
+    height: 2px;
+    background: ${COLOR_ACTIVE};
+    border-radius: 2px;
+  }
 
   &:hover {
-    color: ${COLOR_PRIMARY};
+    color: ${COLOR_ACTIVE};
   }
 `
 
@@ -40,61 +73,84 @@ export const CardList = styled.div`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 `
 
 export const Card = styled.article`
-  padding: 20px;
-  background: ${COLOR_BG_CONTAINER};
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-`
-
-export const CardTags = styled.div`
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: ${COLOR_CARD_BG};
+  border: 1px solid ${COLOR_CARD_BORDER};
+  border-radius: 8px;
 `
 
-export const CardTitle = styled.a`
-  font-size: 16px;
+export const CardTop = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+export const DocIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+`
+
+export const CardTitleArea = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+`
+
+export const CardTitleText = styled.a`
+  font-size: 14px;
   font-weight: 600;
-  color: ${COLOR_TEXT};
-  display: block;
-  margin-bottom: 8px;
+  line-height: 22px;
+  color: ${COLOR_TITLE};
   text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:hover {
-    color: ${COLOR_LINK};
+    color: ${COLOR_ACTIVE};
   }
-`
-
-export const CardDesc = styled.p`
-  font-size: 14px;
-  color: ${COLOR_TEXT_SECONDARY};
-  line-height: 1.6;
-  margin: 0 0 12px 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 `
 
 export const CardMeta = styled.div`
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+export const MetaLeft = styled.div`
+  display: flex;
   align-items: center;
   gap: 16px;
-  font-size: 12px;
-  color: ${COLOR_TEXT_SECONDARY};
+`
+
+export const MetaRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
 `
 
 export const MetaItem = styled.span`
   display: flex;
   align-items: center;
   gap: 4px;
+  font-size: 12px;
+  line-height: 18px;
+  color: ${COLOR_META};
+`
+
+export const EmptyWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `

@@ -24,6 +24,7 @@ function renderHomePage() {
 
 describe('HomePage', () => {
   beforeEach(() => {
+    localStorage.setItem('username', '测试用户')
     vi.spyOn(knowledgeStore, 'loadCards').mockResolvedValue(undefined)
     vi.spyOn(knowledgeStore, 'loadDirectoryTree').mockResolvedValue(undefined)
     vi.spyOn(rankingStore, 'loadAll').mockResolvedValue(undefined)
@@ -40,6 +41,7 @@ describe('HomePage', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+    localStorage.clear()
   })
 
   it('renders header with navigation tabs', () => {
@@ -76,10 +78,10 @@ describe('HomePage', () => {
 
   it('renders ranking panel sections', () => {
     renderHomePage()
-    expect(screen.getByText('学习之星')).toBeInTheDocument()
-    expect(screen.getByText('原创之星')).toBeInTheDocument()
-    expect(screen.getByText('热门之星')).toBeInTheDocument()
+    expect(screen.getByText('知识之星（7月）')).toBeInTheDocument()
+    expect(screen.getByText('了解更多')).toBeInTheDocument()
     expect(screen.getByText('消息通知')).toBeInTheDocument()
+    expect(screen.getByText('查看全部')).toBeInTheDocument()
   })
 
   it('renders knowledge cards when data is loaded', async () => {
@@ -102,9 +104,8 @@ describe('HomePage', () => {
     renderHomePage()
     await waitFor(() => {
       expect(screen.getByText('测试知识卡片')).toBeInTheDocument()
-      expect(screen.getByText('这是一个测试描述')).toBeInTheDocument()
       expect(screen.getByText('置顶')).toBeInTheDocument()
-      expect(screen.getByText('测试用户')).toBeInTheDocument()
+      expect(screen.getAllByText('测试用户').length).toBeGreaterThanOrEqual(2)
     })
   })
 

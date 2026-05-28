@@ -1,87 +1,164 @@
 // src/pages/home/components/RankingPanel/style.ts
 import styled from '@emotion/styled'
-import { COLOR_TEXT, COLOR_TEXT_SECONDARY, COLOR_BG_CONTAINER, COLOR_LINK } from '../../../../theme/colors'
+
+const COLOR_TITLE = 'rgba(0, 14, 26, 0.95)'
+const COLOR_LINK = '#005096'
+const COLOR_META = 'rgba(0, 14, 26, 0.65)'
+const COLOR_COUNT = '#005096'
 
 export const PanelContainer = styled.aside`
-  width: 320px;
+  width: 338px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 0 16px 0 0;
   overflow-y: auto;
-  padding: 20px 16px;
-  background: ${COLOR_BG_CONTAINER};
-  border-left: 1px solid rgba(0, 0, 0, 0.06);
 `
 
-export const Section = styled.div`
-  margin-bottom: 24px;
+export const StarSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+  background: #f5faff;
+  border: 1px solid #ebf5ff;
+  border-radius: 8px;
 `
 
-export const SectionTitle = styled.div`
-  font-size: 14px;
+export const StarHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+`
+
+export const StarTitle = styled.span`
+  font-size: 18px;
   font-weight: 600;
-  color: ${COLOR_TEXT};
-  margin-bottom: 12px;
+  line-height: 24px;
+  color: ${COLOR_TITLE};
+  padding: 8px 16px;
+`
+
+export const StarLink = styled.span`
+  font-size: 14px;
+  line-height: 22px;
+  color: ${COLOR_LINK};
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`
+
+export const StarContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 `
 
 export const RankItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-
-  & + & {
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
-  }
+  gap: 24px;
+  padding: 8px 16px;
 `
 
-export const RankBadge = styled.span<{ rank: number }>`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  background: ${({ rank }) => (rank === 1 ? '#f5a623' : rank === 2 ? '#9b9b9b' : '#cd7f32')};
+export const MedalIcon = styled.img`
+  width: 72px;
+  height: 72px;
   flex-shrink: 0;
 `
 
 export const RankInfo = styled.div`
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   min-width: 0;
 `
 
-export const RankName = styled.div`
-  font-size: 13px;
-  color: ${COLOR_TEXT};
-`
-
-export const RankDept = styled.div`
-  font-size: 12px;
-  color: ${COLOR_TEXT_SECONDARY};
-`
-
-export const RankCount = styled.div`
-  font-size: 13px;
+export const RankName = styled.span`
+  font-size: 14px;
   font-weight: 600;
-  color: ${COLOR_LINK};
+  line-height: 22px;
+  color: ${COLOR_TITLE};
+`
+
+export const RankDept = styled.span`
+  font-size: 12px;
+  line-height: 18px;
+  color: ${COLOR_META};
+`
+
+export const RankCount = styled.span`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  color: ${COLOR_COUNT};
   flex-shrink: 0;
 `
 
-export const NotifItem = styled.div<{ isRead: boolean }>`
-  padding: 8px 0;
-  font-size: 13px;
-  color: ${({ isRead }) => (isRead ? COLOR_TEXT_SECONDARY : COLOR_TEXT)};
-  opacity: ${({ isRead }) => (isRead ? 0.6 : 1)};
+export const NotifSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0 0;
+`
 
-  & + & {
-    border-top: 1px solid rgba(0, 0, 0, 0.04);
+export const NotifHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px 0 0;
+`
+
+export const NotifTitle = styled.span`
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+  color: ${COLOR_TITLE};
+  padding: 8px 16px;
+`
+
+export const NotifList = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px;
+`
+
+export const NotifItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f2f4;
+
+  &:last-child {
+    border-bottom: none;
   }
 `
 
-export const NotifTime = styled.div`
+export const NotifInner = styled.div`
+  display: flex;
+  gap: 24px;
+`
+
+export const NotifText = styled.span<{ isRead: boolean }>`
+  font-size: 14px;
+  line-height: 22px;
+  color: ${({ isRead }) => (isRead ? COLOR_META : COLOR_TITLE)};
+  flex: 1;
+`
+
+export const NotifInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
-  color: ${COLOR_TEXT_SECONDARY};
-  margin-top: 2px;
+  line-height: 18px;
+  color: ${COLOR_META};
 `

@@ -2,17 +2,14 @@
 import { makeAutoObservable } from 'mobx'
 
 class HomeStore {
-  activeMenuTab: 'push' | 'trajectory' = 'push'
   activePushTab: 'mustread' | 'subscribe' = 'mustread'
   activeTrajectoryTab: 'favorite' | 'read' = 'favorite'
   searchKeyword = ''
+  selectedCatalogKey = ''
+  catalogSearchKeyword = ''
 
   constructor() {
     makeAutoObservable(this)
-  }
-
-  setActiveMenuTab(tab: 'push' | 'trajectory') {
-    this.activeMenuTab = tab
   }
 
   setActivePushTab(tab: 'mustread' | 'subscribe') {
@@ -25,6 +22,14 @@ class HomeStore {
 
   setSearchKeyword(keyword: string) {
     this.searchKeyword = keyword
+  }
+
+  setSelectedCatalogKey(key: string) {
+    this.selectedCatalogKey = key
+  }
+
+  setCatalogSearchKeyword(keyword: string) {
+    this.catalogSearchKeyword = keyword
   }
 }
 
