@@ -1,13 +1,14 @@
 // src/pages/home/components/HomeHeader/style.ts
 import styled from '@emotion/styled'
-import { COLOR_BG_CONTAINER } from '../../../../theme/colors'
-
-const COLOR_ACTIVE = '#005096'
-const COLOR_INACTIVE = '#273849'
-const COLOR_USER_TEXT = 'rgba(0, 14, 26, 0.65)'
-const COLOR_SEARCH_BG = 'rgba(0, 14, 26, 0.08)'
-const COLOR_SEARCH_PLACEHOLDER = 'rgba(0, 14, 26, 0.45)'
-const COLOR_SEARCH_ICON = '#5B6275'
+import {
+  COLOR_BG_CONTAINER,
+  COLOR_PRIMARY,
+  COLOR_TEXT,
+  COLOR_TEXT_SECONDARY,
+  COLOR_SEARCH_BG,
+  COLOR_PLACEHOLDER,
+  COLOR_SEARCH_ICON,
+} from '../../../../theme/colors'
 
 export const HeaderBar = styled.header`
   display: flex;
@@ -35,7 +36,7 @@ export const NavTab = styled.button<{ active: boolean }>`
   font-size: 18px;
   font-weight: ${({ active }) => (active ? 600 : 400)};
   line-height: 24px;
-  color: ${({ active }) => (active ? COLOR_ACTIVE : COLOR_INACTIVE)};
+  color: ${({ active }) => (active ? COLOR_PRIMARY : COLOR_TEXT)};
   cursor: pointer;
   transition: color 0.2s;
 
@@ -50,7 +51,7 @@ export const NavTab = styled.button<{ active: boolean }>`
   }
 
   &:hover {
-    color: ${COLOR_ACTIVE};
+    color: ${COLOR_PRIMARY};
   }
 `
 
@@ -77,7 +78,7 @@ export const SearchWrapper = styled.div`
       background: transparent;
 
       &::placeholder {
-        color: ${COLOR_SEARCH_PLACEHOLDER};
+        color: ${COLOR_PLACEHOLDER};
         font-size: 18px;
       }
     }
@@ -131,11 +132,11 @@ export const UserDropdown = styled.div`
   gap: 4px;
   padding: 0 4px;
   cursor: pointer;
-  color: ${COLOR_USER_TEXT};
+  color: ${COLOR_TEXT_SECONDARY};
   transition: color 0.2s;
 
   &:hover {
-    color: ${COLOR_ACTIVE};
+    color: ${COLOR_PRIMARY};
   }
 `
 
