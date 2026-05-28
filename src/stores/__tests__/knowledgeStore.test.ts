@@ -5,20 +5,20 @@ import type { KnowledgeCard } from '../../service/home'
 
 const MOCK_CARDS: KnowledgeCard[] = [
   {
-    id: '1', title: 'React Performance Guide', docType: 'richtext',
-    author: { id: 'a1', name: 'Zhang Wei' },
+    id: '1', title: 'React Performance Guide', description: 'Learn React optimization', docType: 'richtext',
+    author: { name: 'Zhang Wei' },
     tags: [], views: 100, likes: 10, isLocked: false,
     createdAt: '2026-05-01T00:00:00Z',
   },
   {
-    id: '2', title: 'TypeScript Handbook', docType: 'pdf',
-    author: { id: 'a2', name: 'Li Ming' },
+    id: '2', title: 'TypeScript Handbook', description: 'TS type system deep dive', docType: 'pdf',
+    author: { name: 'Li Ming' },
     tags: [], views: 200, likes: 20, isLocked: false,
     createdAt: '2026-05-02T00:00:00Z',
   },
   {
-    id: '3', title: 'Node.js Best Practices', docType: 'word',
-    author: { id: 'a1', name: 'Zhang Wei' },
+    id: '3', title: 'Node.js Best Practices', description: 'Node patterns', docType: 'word',
+    author: { name: 'Zhang Wei' },
     tags: [], views: 150, likes: 15, isLocked: true,
     createdAt: '2026-05-03T00:00:00Z',
   },
