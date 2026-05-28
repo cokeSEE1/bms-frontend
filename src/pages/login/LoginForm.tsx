@@ -12,13 +12,11 @@ function LoginForm() {
   const { message } = App.useApp()
   const { isSubmitting, handleSubmit } = useLoginForm()
 
-  const onFinish = async () => {
+  const onFinish = async (values: { username: string; password: string }) => {
     try {
-      await handleSubmit()
+      await handleSubmit(values)
       message.success(loginTexts.login_success)
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 500)
+      navigate('/dashboard')
     } catch {
       message.error(loginTexts.login_failed)
     }

@@ -1,5 +1,12 @@
 import { renderHook, act } from '@testing-library/react'
+import { vi } from 'vitest'
 import useRegisterForm from '../useRegisterForm'
+
+vi.mock('../../service', () => ({
+  useRegister: () => ({
+    register: vi.fn().mockResolvedValue(undefined),
+  }),
+}))
 
 describe('useRegisterForm', () => {
   it('returns initial form values', () => {

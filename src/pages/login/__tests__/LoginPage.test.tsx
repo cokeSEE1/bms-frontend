@@ -15,9 +15,14 @@ function renderLoginPage() {
 }
 
 describe('LoginPage', () => {
-  it('renders brand title and form title', () => {
+  it('renders brand logo and wordmark', () => {
+    const { container } = renderLoginPage()
+    expect(container.querySelector('[data-testid="brand-logo"]')).toBeInTheDocument()
+    expect(container.querySelector('[data-testid="brand-wordmark"]')).toBeInTheDocument()
+  })
+
+  it('renders form title', () => {
     renderLoginPage()
-    expect(screen.getByText(loginTexts.brand_title)).toBeInTheDocument()
     expect(screen.getByText(loginTexts.form_title)).toBeInTheDocument()
   })
 

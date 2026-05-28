@@ -15,9 +15,10 @@ function renderRegisterPage() {
 }
 
 describe('RegisterPage', () => {
-  it('renders brand title', () => {
-    renderRegisterPage()
-    expect(screen.getByText('图书管理系统')).toBeInTheDocument()
+  it('renders brand logo and wordmark', () => {
+    const { container } = renderRegisterPage()
+    expect(container.querySelector('[data-testid="brand-logo"]')).toBeInTheDocument()
+    expect(container.querySelector('[data-testid="brand-wordmark"]')).toBeInTheDocument()
   })
 
   it('renders form title', () => {

@@ -1,5 +1,12 @@
 import { renderHook, act } from '@testing-library/react'
+import { vi } from 'vitest'
 import useLoginForm from '../useLoginForm'
+
+vi.mock('../../service', () => ({
+  useLogin: () => ({
+    login: vi.fn().mockResolvedValue(undefined),
+  }),
+}))
 
 describe('useLoginForm', () => {
   it('returns initial form values', () => {

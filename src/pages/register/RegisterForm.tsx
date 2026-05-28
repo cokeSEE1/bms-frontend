@@ -12,13 +12,11 @@ function RegisterForm() {
   const { message } = App.useApp()
   const { isSubmitting, handleSubmit } = useRegisterForm()
 
-  const onFinish = async () => {
+  const onFinish = async (values: { username: string; password: string }) => {
     try {
-      await handleSubmit()
+      await handleSubmit(values)
       message.success(registerTexts.register_success)
-      setTimeout(() => {
-        navigate('/login')
-      }, 500)
+      navigate('/login')
     } catch {
       message.error(registerTexts.register_failed)
     }

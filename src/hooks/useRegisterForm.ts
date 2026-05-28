@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import registerTexts from '../i18n/locales/zh-CN/register'
+import { useRegister } from '../service'
 
 interface UseRegisterFormReturn {
   username: string
@@ -10,7 +11,7 @@ interface UseRegisterFormReturn {
   setPassword: (value: string) => void
   setConfirmPassword: (value: string) => void
   validateField: (field: 'username' | 'password' | 'confirmPassword', value: string) => string | undefined
-  handleSubmit: () => Promise<void>
+  handleSubmit: (values: { username: string; password: string }) => Promise<void>
 }
 
 export const USERNAME_PATTERN = /^\w{3,20}$/
@@ -20,6 +21,7 @@ function useRegisterForm(): UseRegisterFormReturn {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { register } = useRegister()
 
   const validateField = useCallback(
     (field: 'username' | 'password' | 'confirmPassword', value: string): string | undefined => {
@@ -44,11 +46,19 @@ function useRegisterForm(): UseRegisterFormReturn {
     [password],
   )
 
-  const handleSubmit = useCallback(async () => {
-    setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsSubmitting(false)
-  }, [])
+  const handleSubmit = useCallback(
+    async (values: { username: string; password: string }) => {
+      setIsSubmitting(true)
+      try {
+        await register(values)
+      } catch (err) {
+        setIsSubmitting(false)
+        throw err
+      }
+      setIsSubmitting(false)
+    },
+    [register],
+  )
 
   return {
     username,

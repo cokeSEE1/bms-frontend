@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import loginTexts from '../i18n/locales/zh-CN/login'
+import { useLogin } from '../service'
 
 interface UseLoginFormReturn {
   username: string
@@ -10,7 +11,7 @@ interface UseLoginFormReturn {
   setPassword: (value: string) => void
   setRemember: (value: boolean) => void
   validateField: (field: 'username' | 'password', value: string) => string | undefined
-  handleSubmit: () => Promise<void>
+  handleSubmit: (values: { username: string; password: string }) => Promise<void>
 }
 
 export const USERNAME_PATTERN = /^\w{3,20}$/
@@ -20,6 +21,7 @@ function useLoginForm(): UseLoginFormReturn {
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { login } = useLogin()
 
   const validateField = useCallback(
     (field: 'username' | 'password', value: string): string | undefined => {
@@ -39,11 +41,19 @@ function useLoginForm(): UseLoginFormReturn {
     [],
   )
 
-  const handleSubmit = useCallback(async () => {
-    setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsSubmitting(false)
-  }, [])
+  const handleSubmit = useCallback(
+    async (values: { username: string; password: string }) => {
+      setIsSubmitting(true)
+      try {
+        await login(values)
+      } catch (err) {
+        setIsSubmitting(false)
+        throw err
+      }
+      setIsSubmitting(false)
+    },
+    [login],
+  )
 
   return {
     username,

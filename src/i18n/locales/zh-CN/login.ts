@@ -1,5 +1,5 @@
 const loginTexts = {
-  brand_title: '图书管理系统',
+  brand_title: '知识管理系统',
   brand_tagline: '知识的海洋，从这里启航',
   form_title: '欢迎登录',
   username_label: '用户名',
