@@ -8,6 +8,7 @@ class KnowledgeStore {
   loading = false
   sortBy: 'recommend' | 'likes' | 'latest' = 'recommend'
   directoryTree: TreeNode[] = []
+  searchQuery = ''
 
   constructor() {
     makeAutoObservable(this)
@@ -37,6 +38,27 @@ class KnowledgeStore {
     runInAction(() => {
       this.directoryTree = data
     })
+  }
+
+  setSearchQuery(query: string) {
+    this.searchQuery = query
+  }
+
+  clearSearch() {
+    this.searchQuery = ''
+  }
+
+  get filteredCards(): KnowledgeCard[] {
+    const query = this.searchQuery.trim()
+    if (!query) {
+      return this.cards
+    }
+    const lower = query.toLowerCase()
+    return this.cards.filter(
+      (card) =>
+        card.title.toLowerCase().includes(lower) ||
+        card.author.name.toLowerCase().includes(lower),
+    )
   }
 }
 
