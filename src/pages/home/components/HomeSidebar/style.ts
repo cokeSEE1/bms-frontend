@@ -1,19 +1,19 @@
-// src/pages/home/components/HomeSidebar/style.ts
 import styled from '@emotion/styled'
-
-const COLOR_ACTIVE = '#005096'
-const COLOR_TEXT_PRIMARY = '#363A46'
-const COLOR_TEXT_TITLE = 'rgba(0, 14, 26, 0.95)'
-const COLOR_SEARCH_BG = '#FFFFFF'
-const COLOR_SEARCH_PLACEHOLDER = 'rgba(0, 14, 26, 0.45)'
-const COLOR_SEARCH_ICON = '#5B6275'
-const COLOR_TAG_BG = '#432FCD'
+import {
+  COLOR_PRIMARY,
+  COLOR_TEXT,
+  COLOR_BG_CONTAINER,
+  COLOR_PLACEHOLDER,
+  COLOR_SEARCH_ICON,
+  COLOR_TAG_BG,
+  COLOR_SURFACE_COOL,
+} from '../../../../theme/colors'
 
 export const SidebarContainer = styled.aside`
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #f9faff;
+  background: ${COLOR_SURFACE_COOL};
   border-radius: 16px 0 0 0;
   overflow-y: auto;
 `
@@ -38,7 +38,7 @@ export const TabCardTitle = styled.div`
   font-size: 14px;
   font-weight: 600;
   line-height: 22px;
-  color: ${COLOR_TEXT_PRIMARY};
+  color: ${COLOR_TEXT};
   text-align: center;
   padding: 4px 0;
 `
@@ -59,11 +59,11 @@ export const IconItem = styled.button<{ active: boolean }>`
   border: none;
   background: none;
   cursor: pointer;
-  color: ${({ active }) => (active ? COLOR_ACTIVE : COLOR_TEXT_PRIMARY)};
+  color: ${({ active }) => (active ? COLOR_PRIMARY : COLOR_TEXT)};
   transition: color 0.2s;
 
   &:hover {
-    color: ${COLOR_ACTIVE};
+    color: ${COLOR_PRIMARY};
   }
 
   img {
@@ -99,7 +99,7 @@ export const CatalogTitle = styled.span`
   font-size: 18px;
   font-weight: 600;
   line-height: 24px;
-  color: ${COLOR_TEXT_TITLE};
+  color: ${COLOR_TEXT};
   padding: 0 16px;
 `
 
@@ -132,7 +132,7 @@ export const SearchWrapper = styled.div`
   .ant-input-affix-wrapper {
     height: 36px;
     padding: 0 12px;
-    background: ${COLOR_SEARCH_BG};
+    background: ${COLOR_BG_CONTAINER};
     border: none;
     border-radius: 8px;
     box-shadow: none;
@@ -141,7 +141,7 @@ export const SearchWrapper = styled.div`
     &:hover {
       border: none;
       box-shadow: none;
-      background: ${COLOR_SEARCH_BG};
+      background: ${COLOR_BG_CONTAINER};
     }
 
     .ant-input {
@@ -149,7 +149,7 @@ export const SearchWrapper = styled.div`
       background: transparent;
 
       &::placeholder {
-        color: ${COLOR_SEARCH_PLACEHOLDER};
+        color: ${COLOR_PLACEHOLDER};
         font-size: 14px;
       }
     }
@@ -177,15 +177,15 @@ export const TreeItem = styled.div<{ level: number; selected: boolean }>`
   gap: 4px;
   padding: 6px 8px 6px ${({ level }) => 8 + level * 16}px;
   cursor: pointer;
-  color: ${({ selected }) => (selected ? COLOR_ACTIVE : COLOR_TEXT_TITLE)};
+  color: ${({ selected }) => (selected ? COLOR_PRIMARY : COLOR_TEXT)};
   font-weight: ${({ selected }) => (selected ? 600 : 400)};
   font-size: 14px;
   line-height: 22px;
-  border-left: ${({ selected }) => (selected ? `2px solid ${COLOR_ACTIVE}` : '2px solid transparent')};
+  border-left: ${({ selected }) => (selected ? `2px solid ${COLOR_PRIMARY}` : '2px solid transparent')};
   transition: color 0.15s, background 0.15s;
 
   &:hover {
-    color: ${COLOR_ACTIVE};
+    color: ${COLOR_PRIMARY};
     background: rgba(0, 80, 150, 0.04);
   }
 
