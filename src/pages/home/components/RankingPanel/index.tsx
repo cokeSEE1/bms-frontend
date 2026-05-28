@@ -1,5 +1,5 @@
 // src/pages/home/components/RankingPanel/index.tsx
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { observer } from 'mobx-react-lite'
 import { rankingStore } from '../../../../stores/rankingStore'
 import home from '../../../../i18n/locales/zh-CN/home'
@@ -42,7 +42,7 @@ const RANK_SECTIONS: { key: 'studyStars' | 'originalStars' | 'hotStars'; title: 
   { key: 'hotStars', title: home.ranking.hotStar },
 ]
 
-function RankUserItem({ user, sectionKey }: { user: RankUser; sectionKey: string }) {
+const RankUserItem = React.memo(function RankUserItem({ user, sectionKey }: { user: RankUser; sectionKey: string }) {
   return (
     <RankItem>
       <MedalIcon src={MEDAL_ICONS[sectionKey]} alt="" />
@@ -53,7 +53,7 @@ function RankUserItem({ user, sectionKey }: { user: RankUser; sectionKey: string
       <RankCount>{user.count}</RankCount>
     </RankItem>
   )
-}
+})
 
 function RankingPanel() {
   useEffect(() => {
