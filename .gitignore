@@ -17,3 +17,8 @@ dist-ssr
 # debug
 npm-debug.log*
 pnpm-debug.log*
+
+# tools
+.playwright-mcp/
+.superpowers/
+docs/
