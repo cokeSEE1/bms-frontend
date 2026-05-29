@@ -15,6 +15,7 @@ import {
   SortBar,
   SortLabel,
   SortPill,
+  SortIndicator,
 } from './DirectoryDetailHeader.style'
 
 interface SortOption {
@@ -86,7 +87,7 @@ const DirectoryDetailHeader = observer(({ dirId }: DirectoryDetailHeaderProps) =
           >
             <span>{opt.icon}</span>
             {opt.label}
-            {store.sortField === opt.key && <span style={{ fontSize: 10 }}>↑↓</span>}
+            {store.sortField === opt.key && <SortIndicator>↑↓</SortIndicator>}
           </SortPill>
         ))}
       </SortBar>

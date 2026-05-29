@@ -98,6 +98,10 @@ export const SortLabel = styled.span`
   margin-right: 6px;
 `
 
+export const SortIndicator = styled.span`
+  font-size: 10px;
+`
+
 export const SortPill = styled.button<{ active: boolean }>`
   display: flex;
   align-items: center;
