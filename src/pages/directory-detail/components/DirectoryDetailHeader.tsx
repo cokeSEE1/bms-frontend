@@ -7,7 +7,6 @@ import {
   HeaderContainer,
   HeaderLeft,
   HeaderRight,
-  DirectoryTitle,
   SearchInput,
 } from './DirectoryDetailHeader.style'
 
@@ -43,7 +42,6 @@ const DirectoryDetailHeader = observer(({ dirId }: DirectoryDetailHeaderProps) =
             { title: title },
           ]}
         />
-        <DirectoryTitle>{title}</DirectoryTitle>
       </HeaderLeft>
       <HeaderRight>
         <SearchInput>
