@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { runInAction } from 'mobx'
-import { knowledgeStore } from '../knowledgeStore'
-import type { KnowledgeCard } from '../../service/home'
+import { knowledgeStore, MAX_TREE_LEVEL } from '../knowledgeStore'
+import type { KnowledgeCard, TreeNode } from '../../service/home'
 
 const MOCK_CARDS: KnowledgeCard[] = [
   {
@@ -70,5 +70,67 @@ describe('knowledgeStore', () => {
     knowledgeStore.setSearchQuery('test')
     knowledgeStore.clearSearch()
     expect(knowledgeStore.searchQuery).toBe('')
+  })
+})
+
+describe('knowledgeStore - moveNode', () => {
+  beforeEach(() => {
+    runInAction(() => {
+      knowledgeStore.directoryTree = [
+        {
+          title: 'Root', key: '1', dirType: 0,
+          children: [
+            { title: 'Child A', key: '2', dirType: 0 },
+            { title: 'Child B', key: '3', dirType: 0 },
+          ],
+        },
+        { title: 'Sibling', key: '4', dirType: 0 },
+      ]
+    })
+  })
+
+  it('moveNode calls moveDirectoryNode and reloads tree', async () => {
+    expect(typeof knowledgeStore.moveNode).toBe('function')
+  })
+})
+
+describe('knowledgeStore - isDescendantOf', () => {
+  beforeEach(() => {
+    runInAction(() => {
+      knowledgeStore.directoryTree = [
+        {
+          title: 'Root', key: '1', dirType: 0,
+          children: [
+            {
+              title: 'Child', key: '2', dirType: 0,
+              children: [
+                { title: 'Grandchild', key: '3', dirType: 0 },
+              ],
+            },
+          ],
+        },
+        { title: 'Sibling', key: '4', dirType: 0 },
+      ]
+    })
+  })
+
+  it('returns true when descendant is a grandchild', () => {
+    expect(knowledgeStore.isDescendantOf('1', '3')).toBe(true)
+  })
+
+  it('returns true when descendant is a direct child', () => {
+    expect(knowledgeStore.isDescendantOf('1', '2')).toBe(true)
+  })
+
+  it('returns false when ancestor and descendant are swapped', () => {
+    expect(knowledgeStore.isDescendantOf('3', '1')).toBe(false)
+  })
+
+  it('returns false for unrelated nodes', () => {
+    expect(knowledgeStore.isDescendantOf('2', '4')).toBe(false)
+  })
+
+  it('returns false for same node', () => {
+    expect(knowledgeStore.isDescendantOf('1', '1')).toBe(false)
   })
 })

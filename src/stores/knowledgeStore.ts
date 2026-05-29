@@ -1,7 +1,16 @@
 // src/stores/knowledgeStore.ts
 import { makeAutoObservable, runInAction } from 'mobx'
-import { getKnowledgeCards, getDirectoryTree } from '../service/home'
-import type { KnowledgeCard, TreeNode, GetKnowledgeCardsParams } from '../service/home'
+import {
+  getKnowledgeCards,
+  getDirectoryTree,
+  createDirectoryNode,
+  renameDirectoryNode,
+  deleteDirectoryNode,
+  moveDirectoryNode,
+} from '../service/home'
+import type { KnowledgeCard, TreeNode, GetKnowledgeCardsParams, MovePosition } from '../service/home'
+
+const MAX_TREE_LEVEL = 5
 
 class KnowledgeStore {
   cards: KnowledgeCard[] = []
@@ -60,6 +69,93 @@ class KnowledgeStore {
         card.author.name.toLowerCase().includes(lower),
     )
   }
+
+  async addNode(parentId: number, dirName: string) {
+    await createDirectoryNode({ parent_id: parentId, dir_name: dirName })
+    await this.loadDirectoryTree()
+  }
+
+  async renameNode(dirId: number, dirName: string) {
+    await renameDirectoryNode({ dir_id: dirId, dir_name: dirName })
+    runInAction(() => {
+      this.directoryTree = this._mapTree(this.directoryTree, (node) =>
+        node.key === String(dirId) ? { ...node, title: dirName } : node,
+      )
+    })
+  }
+
+  async deleteNode(dirId: number) {
+    await deleteDirectoryNode(dirId)
+    await this.loadDirectoryTree()
+  }
+
+  async moveNode(dirId: number, targetId: number, position: MovePosition) {
+    await moveDirectoryNode({ dir_id: dirId, target_id: targetId, position })
+    await this.loadDirectoryTree()
+  }
+
+  getNodeLevel(tree: TreeNode[], targetKey: string, level = 0): number {
+    for (const node of tree) {
+      if (node.key === targetKey) return level
+      if (node.children) {
+        const found = this.getNodeLevel(node.children, targetKey, level + 1)
+        if (found >= 0) return found
+      }
+    }
+    return -1
+  }
+
+  isDescendantOf(ancestorKey: string, descendantKey: string): boolean {
+    const findChildren = (nodes: TreeNode[]): boolean => {
+      for (const node of nodes) {
+        if (node.key === ancestorKey) {
+          return this._nodeExistsInSubtree(node, descendantKey)
+        }
+        if (node.children && findChildren(node.children)) return true
+      }
+      return false
+    }
+    return findChildren(this.directoryTree)
+  }
+
+  private _nodeExistsInSubtree(parent: TreeNode, targetKey: string): boolean {
+    if (!parent.children) return false
+    for (const child of parent.children) {
+      if (child.key === targetKey) return true
+      if (this._nodeExistsInSubtree(child, targetKey)) return true
+    }
+    return false
+  }
+
+  private _mapTree(nodes: TreeNode[], fn: (node: TreeNode) => TreeNode): TreeNode[] {
+    return nodes.map((node) => {
+      const updated = fn(node)
+      return updated.children
+        ? { ...updated, children: this._mapTree(updated.children, fn) }
+        : updated
+    })
+  }
+
+  private _filterTree(
+    nodes: TreeNode[],
+    targetKey: string,
+    onRemove?: (node: TreeNode) => void,
+  ): TreeNode[] {
+    return nodes.reduce<TreeNode[]>((acc, node) => {
+      if (node.key === targetKey) {
+        onRemove?.(node)
+        return acc
+      }
+      if (node.children) {
+        const filtered = this._filterTree(node.children, targetKey, onRemove)
+        acc.push({ ...node, children: filtered.length > 0 ? filtered : undefined })
+      } else {
+        acc.push(node)
+      }
+      return acc
+    }, [])
+  }
 }
 
+export { MAX_TREE_LEVEL }
 export const knowledgeStore = new KnowledgeStore()
