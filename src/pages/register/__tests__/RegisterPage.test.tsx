@@ -4,7 +4,7 @@ import { App } from 'antd'
 import RegisterPage from '../index'
 import registerTexts from '../../../i18n/locales/zh-CN/register'
 
-function renderRegisterPage() {
+const renderRegisterPage = () => {
   return render(
     <MemoryRouter>
       <App>

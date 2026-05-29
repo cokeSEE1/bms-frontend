@@ -3,7 +3,7 @@ import loginTexts from '../../i18n/locales/zh-CN/login'
 import logoSrc from '../../assets/logo.svg'
 import wordmarkSrc from '../../assets/wordmark.svg'
 
-function BrandPanel() {
+const BrandPanel = () => {
   return (
     <BrandPanelWrapper>
       <BrandLogoBox>

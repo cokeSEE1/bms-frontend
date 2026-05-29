@@ -7,7 +7,7 @@ import { FormContainer, FormTitle, BottomLink } from './style'
 
 const { Link } = Typography
 
-function RegisterForm() {
+const RegisterForm = () => {
   const navigate = useNavigate()
   const { message } = App.useApp()
   const { isSubmitting, handleSubmit } = useRegisterForm()

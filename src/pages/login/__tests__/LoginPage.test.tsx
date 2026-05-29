@@ -4,7 +4,7 @@ import { App } from 'antd'
 import LoginPage from '../index'
 import loginTexts from '../../../i18n/locales/zh-CN/login'
 
-function renderLoginPage() {
+const renderLoginPage = () => {
   return render(
     <MemoryRouter>
       <App>

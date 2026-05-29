@@ -2,7 +2,7 @@ import BrandPanel from './BrandPanel'
 import LoginForm from './LoginForm'
 import { PageContainer, FormPanelWrapper } from './style'
 
-function LoginPage() {
+const LoginPage = () => {
   return (
     <PageContainer>
       <BrandPanel />

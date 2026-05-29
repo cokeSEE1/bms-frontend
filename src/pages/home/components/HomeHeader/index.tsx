@@ -20,7 +20,7 @@ import {
   Username,
 } from './style'
 
-function HomeHeader() {
+const HomeHeader = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const username = localStorage.getItem('username') || ''

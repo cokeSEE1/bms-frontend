@@ -3,7 +3,7 @@ import axios from 'axios'
 import client from '../client'
 import type { UserLogin, UserRegister, UserOut, TokenOut, LogoutOut } from '../types'
 
-function extractError(err: unknown): string {
+const extractError = (err: unknown): string => {
   if (axios.isAxiosError(err) && err.response?.data?.detail) {
     return err.response.data.detail
   }
@@ -38,7 +38,7 @@ interface UseLogoutReturn {
   logout: () => Promise<void>
 }
 
-function useLogin(): UseLoginReturn {
+const useLogin = (): UseLoginReturn => {
   const [data, setData] = useState<TokenOut | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -62,7 +62,7 @@ function useLogin(): UseLoginReturn {
   return { data, loading, error, login }
 }
 
-function useRegister(): UseRegisterReturn {
+const useRegister = (): UseRegisterReturn => {
   const [data, setData] = useState<UserOut | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -84,7 +84,7 @@ function useRegister(): UseRegisterReturn {
   return { data, loading, error, register }
 }
 
-function useGetMe(): UseGetMeReturn {
+const useGetMe = (): UseGetMeReturn => {
   const [data, setData] = useState<UserOut | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -106,7 +106,7 @@ function useGetMe(): UseGetMeReturn {
   return { data, loading, error, getMe }
 }
 
-function useLogout(): UseLogoutReturn {
+const useLogout = (): UseLogoutReturn => {
   const [data, setData] = useState<LogoutOut | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

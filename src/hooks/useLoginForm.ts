@@ -16,7 +16,7 @@ interface UseLoginFormReturn {
 
 export const USERNAME_PATTERN = /^\w{3,20}$/
 
-function useLoginForm(): UseLoginFormReturn {
+const useLoginForm = (): UseLoginFormReturn => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)

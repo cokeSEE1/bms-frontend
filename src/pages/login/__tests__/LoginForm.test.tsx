@@ -5,7 +5,7 @@ import { App } from 'antd'
 import LoginForm from '../LoginForm'
 import loginTexts from '../../../i18n/locales/zh-CN/login'
 
-function renderLoginForm() {
+const renderLoginForm = () => {
   return render(
     <MemoryRouter>
       <App>

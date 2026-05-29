@@ -48,7 +48,7 @@ const TAG_COLORS: Record<string, string> = {
   '第三方系统': 'geekblue',
 }
 
-const KnowledgeCardItem = React.memo(function KnowledgeCardItem({ card }: { card: KnowledgeCard }) {
+const KnowledgeCardItem = React.memo(({ card }: { card: KnowledgeCard }) => {
   return (
     <Card>
       <CardTop>
@@ -100,7 +100,7 @@ const DOC_ICON_MAP: Record<KnowledgeCard['docType'], string> = {
   excel: docExcelIcon,
 }
 
-function KnowledgeWaterfall() {
+const KnowledgeWaterfall = () => {
   useEffect(() => {
     knowledgeStore.loadCards({ tab: 'push', subTab: 'mustread', sortBy: knowledgeStore.sortBy })
   }, [knowledgeStore.sortBy])

@@ -16,7 +16,7 @@ interface UseRegisterFormReturn {
 
 export const USERNAME_PATTERN = /^\w{3,20}$/
 
-function useRegisterForm(): UseRegisterFormReturn {
+const useRegisterForm = (): UseRegisterFormReturn => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
