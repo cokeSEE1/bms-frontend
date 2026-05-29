@@ -3,6 +3,7 @@ import LoginPage from '../pages/login'
 import RegisterPage from '../pages/register'
 import DashboardLayout from '../layouts/DashboardLayout'
 import HomePage from '../pages/home'
+import DirectoryDetailPage from '../pages/directory-detail'
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <HomePage />,
+      },
+      {
+        path: 'directory/:dirId',
+        element: <DirectoryDetailPage />,
       },
     ],
   },

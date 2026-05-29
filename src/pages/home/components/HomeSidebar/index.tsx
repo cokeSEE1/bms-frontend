@@ -1,5 +1,5 @@
 // src/pages/home/components/HomeSidebar/index.tsx
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { Input, Modal, Form, Dropdown, App } from 'antd'
 import type { MenuProps } from 'antd'
 import {
@@ -10,6 +10,7 @@ import {
   DeleteOutlined,
   StarFilled,
 } from '@ant-design/icons'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
 import { homeStore } from '../../../../stores/homeStore'
 import { knowledgeStore, MAX_TREE_LEVEL } from '../../../../stores/knowledgeStore'
@@ -53,19 +54,6 @@ import {
   FavItemCount,
   FavEmpty,
 } from './style'
-
-const filterTree = (keyword: string, nodes: TreeNode[]): TreeNode[] => {
-  if (!keyword) return nodes
-  const lower = keyword.toLowerCase()
-  return nodes.reduce<TreeNode[]>((acc, node) => {
-    const titleMatch = node.title.toLowerCase().includes(lower)
-    const filteredChildren = node.children ? filterTree(keyword, node.children) : []
-    if (titleMatch || filteredChildren.length > 0) {
-      acc.push({ ...node, children: filteredChildren.length > 0 ? filteredChildren : node.children })
-    }
-    return acc
-  }, [])
-}
 
 interface TreeNodeDialogProps {
   visible: boolean
@@ -129,6 +117,7 @@ interface CatalogNodeProps {
   onAdd: (parentId: string) => void
   onRename: (id: string, currentTitle: string) => void
   onDelete: (id: string, title: string) => void
+  navigate: (path: string) => void
 }
 
 const CatalogNode = ({
@@ -145,6 +134,7 @@ const CatalogNode = ({
   onAdd,
   onRename,
   onDelete,
+  navigate,
 }: CatalogNodeProps) => {
   const expanded = expandedKeys.includes(node.key)
   const [hovering, setHovering] = useState(false)
@@ -158,7 +148,8 @@ const CatalogNode = ({
     if (hasChildren) {
       onToggleExpand(node.key)
     }
-  }, [node.key, hasChildren, onToggleExpand])
+    navigate(`/dashboard/directory/${node.key}`)
+  }, [node.key, hasChildren, onToggleExpand, navigate])
 
   const moreMenuItems: MenuProps['items'] = [
     {
@@ -252,6 +243,7 @@ const CatalogNode = ({
           onAdd={onAdd}
           onRename={onRename}
           onDelete={onDelete}
+          navigate={navigate}
         />
       ))}
     </>
@@ -260,6 +252,8 @@ const CatalogNode = ({
 
 function HomeSidebar({ collapsed = false }: { collapsed?: boolean }) {
   const { message, modal } = App.useApp()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const [dialogVisible, setDialogVisible] = useState(false)
   const [dialogValue, setDialogValue] = useState('')
@@ -288,6 +282,13 @@ function HomeSidebar({ collapsed = false }: { collapsed?: boolean }) {
     })
   }, [])
 
+  useEffect(() => {
+    const match = location.pathname.match(/^\/dashboard\/directory\/(\d+)$/)
+    if (match) {
+      homeStore.setSelectedCatalogKey(match[1])
+    }
+  }, [location.pathname])
+
   const handleToggleExpand = useCallback((key: string) => {
     setExpandedKeys((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
@@ -298,10 +299,21 @@ function HomeSidebar({ collapsed = false }: { collapsed?: boolean }) {
   const trajectoryActive = homeStore.activeTrajectoryTab
   const keyword = homeStore.catalogSearchKeyword
 
-  const filteredTree = useMemo(
-    () => filterTree(keyword, knowledgeStore.directoryTree),
-    [keyword, knowledgeStore.directoryTree],
-  )
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (!keyword.trim()) {
+      knowledgeStore.clearDirectorySearch()
+      return
+    }
+    debounceRef.current = setTimeout(() => {
+      knowledgeStore.searchDirectory(keyword)
+    }, 300)
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [keyword])
 
   const onDialogClose = () => {
     setDialogVisible(false)
@@ -443,7 +455,10 @@ function HomeSidebar({ collapsed = false }: { collapsed?: boolean }) {
                   <FavItem
                     key={dir.id}
                     selected={isSelected}
-                    onClick={() => homeStore.setSelectedCatalogKey(String(dir.cate_id))}
+                    onClick={() => {
+                      homeStore.setSelectedCatalogKey(String(dir.cate_id))
+                      navigate(`/dashboard/directory/${dir.cate_id}`)
+                    }}
                   >
                     <FavItemIcon>
                       <StarFilled />
@@ -480,24 +495,43 @@ function HomeSidebar({ collapsed = false }: { collapsed?: boolean }) {
         </SearchWrapper>
 
         <TreeList>
-          {filteredTree.map((node) => (
-            <CatalogNode
-              key={node.key}
-              node={node}
-              level={0}
-              expandedKeys={expandedKeys}
-              dragOverKey={dragOverKey}
-              dropPosition={dropPosition}
-              onToggleExpand={handleToggleExpand}
-              onDragStart={onDragStart}
-              onDragOver={onDragOver}
-              onDragLeave={onDragLeave}
-              onDrop={onDrop}
-              onAdd={onAdd}
-              onRename={onRename}
-              onDelete={onDelete}
-            />
-          ))}
+          {keyword.trim()
+            ? knowledgeStore.directorySearchResults.map((item) => (
+                <TreeItem
+                  key={item.id}
+                  level={0}
+                  selected={homeStore.selectedCatalogKey === String(item.id)}
+                  onClick={() => {
+                    homeStore.setSelectedCatalogKey(String(item.id))
+                    homeStore.setCatalogSearchKeyword('')
+                    knowledgeStore.clearDirectorySearch()
+                    navigate(`/dashboard/directory/${item.id}`)
+                  }}
+                >
+                  <img src={folderIcon} alt="" />
+                  <TreeItemText>{item.dir_name}</TreeItemText>
+                  {item.dir_type === 1 && <TreeItemTag>分组</TreeItemTag>}
+                </TreeItem>
+              ))
+            : knowledgeStore.directoryTree.map((node) => (
+                <CatalogNode
+                  key={node.key}
+                  node={node}
+                  level={0}
+                  expandedKeys={expandedKeys}
+                  dragOverKey={dragOverKey}
+                  dropPosition={dropPosition}
+                  onToggleExpand={handleToggleExpand}
+                  onDragStart={onDragStart}
+                  onDragOver={onDragOver}
+                  onDragLeave={onDragLeave}
+                  onDrop={onDrop}
+                  onAdd={onAdd}
+                  onRename={onRename}
+                  onDelete={onDelete}
+                  navigate={navigate}
+                />
+              ))}
         </TreeList>
       </CatalogSection>
 
