@@ -76,7 +76,7 @@ describe('knowledgeStore', () => {
 describe('knowledgeStore - moveNode', () => {
   it('returns a promise when called', () => {
     expect(typeof knowledgeStore.moveNode).toBe('function')
-    const result = knowledgeStore.moveNode(1, 2, 'above')
+    const result = knowledgeStore.moveNode(1, 2, 'first-child')
     expect(result).toBeInstanceOf(Promise)
     result.catch(() => {}) // suppress unhandled rejection from unmocked API call
   })

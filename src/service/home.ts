@@ -197,11 +197,33 @@ export const deleteDirectoryNode = async (dir_id: number): Promise<void> => {
 export type MovePosition = 'left' | 'right' | 'first-child' | 'last-child'
 
 export const moveDirectoryNode = async (params: { dir_id: number; target_id: number; position: MovePosition }): Promise<void> => {
-  await client.put('/v1/directory/move', {
-    dir_id: params.dir_id,
+  await client.put('/v1/directory/node/move', {
+    source_id: params.dir_id,
     target_id: params.target_id,
     position: params.position,
   })
+}
+
+// Directory search
+export interface DirectorySearchItem {
+  id: number
+  dir_name: string
+  dir_type: number
+  level: number
+  parent_id: number | null
+  tree_id: number
+}
+
+export interface DirectorySearchResponse {
+  total: number
+  items: DirectorySearchItem[]
+}
+
+export const searchDirectoryNodes = async (keyword: string, limit = 20, offset = 0): Promise<DirectorySearchResponse> => {
+  const { data } = await client.get<DirectorySearchResponse>('/v1/directory/search', {
+    params: { keyword, limit, offset },
+  })
+  return data
 }
 
 // Directory favorites
