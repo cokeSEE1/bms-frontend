@@ -33,6 +33,7 @@ export interface TreeNode {
   key: string
   children?: TreeNode[]
   tag?: string
+  dirType: number
 }
 
 interface DirectoryTreeNodeBackend {
@@ -138,39 +139,95 @@ export type GetKnowledgeCardsParams = {
   sortBy: 'recommend' | 'likes' | 'latest'
 }
 
-export async function getKnowledgeCards(_params: GetKnowledgeCardsParams): Promise<KnowledgeCard[]> {
+export const getKnowledgeCards = async (_params: GetKnowledgeCardsParams): Promise<KnowledgeCard[]> => {
   return Promise.resolve(mockCards)
 }
 
-function mapDirectoryTreeNode(backendNode: DirectoryTreeNodeBackend): TreeNode {
+const mapDirectoryTreeNode = (backendNode: DirectoryTreeNodeBackend): TreeNode => {
   return {
     title: backendNode.dir_name,
     key: String(backendNode.id),
+    dirType: backendNode.dir_type,
     tag: backendNode.dir_type === 1 ? '分组' : undefined,
     children: backendNode.children?.map(mapDirectoryTreeNode),
   }
 }
 
-export async function getDirectoryTree(): Promise<TreeNode[]> {
-  const { data } = await client.post<DirectoryTreeNodeBackend>('/v1/directory/tree', {
-    dir_id: 0,
-    level: -1,
-  })
-  return [mapDirectoryTreeNode(data)]
+export const getDirectoryTree = async (): Promise<TreeNode[]> => {
+  const { data } = await client.get<DirectoryTreeNodeBackend[]>('/v1/directory/trees')
+  return data.map(mapDirectoryTreeNode)
 }
 
-export async function getStudyStars(): Promise<RankUser[]> {
+export const getStudyStars = async (): Promise<RankUser[]> => {
   return Promise.resolve(mockStudyStars)
 }
 
-export async function getOriginalStars(): Promise<RankUser[]> {
+export const getOriginalStars = async (): Promise<RankUser[]> => {
   return Promise.resolve(mockOriginalStars)
 }
 
-export async function getHotStars(): Promise<RankUser[]> {
+export const getHotStars = async (): Promise<RankUser[]> => {
   return Promise.resolve(mockHotStars)
 }
 
-export async function getNotifications(): Promise<NotificationItem[]> {
+export const getNotifications = async (): Promise<NotificationItem[]> => {
   return Promise.resolve(mockNotifications)
+}
+
+export const createDirectoryNode = async (params: { parent_id: number; dir_name: string; dir_type?: number; km_id?: number | null }): Promise<TreeNode> => {
+  const { data } = await client.post<DirectoryTreeNodeBackend>('/v1/directory/node', {
+    parent_id: params.parent_id,
+    dir_name: params.dir_name,
+    dir_type: params.dir_type ?? 0,
+    km_id: params.km_id ?? null,
+  })
+  return mapDirectoryTreeNode(data)
+}
+
+export const renameDirectoryNode = async (_params: { dir_id: number; dir_name: string }): Promise<void> => {
+  return Promise.resolve()
+}
+
+export const deleteDirectoryNode = async (dir_id: number): Promise<void> => {
+  await client.delete('/v1/directory/node', {
+    data: { dir_id, delete_type: 1 },
+  })
+}
+
+export type MovePosition = 'left' | 'right' | 'first-child' | 'last-child'
+
+export const moveDirectoryNode = async (params: { dir_id: number; target_id: number; position: MovePosition }): Promise<void> => {
+  await client.put('/v1/directory/move', {
+    dir_id: params.dir_id,
+    target_id: params.target_id,
+    position: params.position,
+  })
+}
+
+// Directory favorites
+export interface DirectoryFavoriteItem {
+  id: number
+  cate_id: number
+  cate_name: string
+  count: number
+  create_time: string
+}
+
+export interface DirectoryFavoriteListResponse {
+  items: DirectoryFavoriteItem[]
+}
+
+const mockDirectoryFavorites: DirectoryFavoriteItem[] = [
+  { id: 1, cate_id: 101, cate_name: '前端技术文档', count: 12, create_time: '2026-05-20T08:00:00Z' },
+  { id: 2, cate_id: 102, cate_name: '后端架构设计', count: 8, create_time: '2026-05-18T10:30:00Z' },
+  { id: 3, cate_id: 103, cate_name: '产品需求规范', count: 5, create_time: '2026-05-15T14:00:00Z' },
+  { id: 4, cate_id: 104, cate_name: '测试流程与规范', count: 3, create_time: '2026-05-12T09:00:00Z' },
+  { id: 5, cate_id: 105, cate_name: 'UI设计系统', count: 15, create_time: '2026-05-08T11:00:00Z' },
+  { id: 6, cate_id: 106, cate_name: '数据接口文档', count: 7, create_time: '2026-04-28T09:30:00Z' },
+  { id: 7, cate_id: 107, cate_name: '运维部署手册', count: 4, create_time: '2026-04-15T16:00:00Z' },
+  { id: 8, cate_id: 108, cate_name: '安全规范文档', count: 6, create_time: '2026-04-10T14:00:00Z' },
+]
+
+export const getDirectoryFavoriteList = async (): Promise<DirectoryFavoriteListResponse> => {
+  return Promise.resolve({ items: mockDirectoryFavorites })
 }
