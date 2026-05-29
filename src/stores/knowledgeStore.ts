@@ -7,8 +7,9 @@ import {
   renameDirectoryNode,
   deleteDirectoryNode,
   moveDirectoryNode,
+  searchDirectoryNodes,
 } from '../service/home'
-import type { KnowledgeCard, TreeNode, GetKnowledgeCardsParams, MovePosition } from '../service/home'
+import type { KnowledgeCard, TreeNode, GetKnowledgeCardsParams, MovePosition, DirectorySearchItem } from '../service/home'
 
 const MAX_TREE_LEVEL = 5
 
@@ -17,6 +18,8 @@ class KnowledgeStore {
   loading = false
   sortBy: 'recommend' | 'likes' | 'latest' = 'recommend'
   directoryTree: TreeNode[] = []
+  directorySearchResults: DirectorySearchItem[] = []
+  directorySearching = false
   searchQuery = ''
 
   constructor() {
@@ -94,6 +97,35 @@ class KnowledgeStore {
     await this.loadDirectoryTree()
   }
 
+  async searchDirectory(keyword: string) {
+    const trimmed = keyword.trim()
+    if (!trimmed) {
+      runInAction(() => {
+        this.directorySearchResults = []
+        this.directorySearching = false
+      })
+      return
+    }
+    this.directorySearching = true
+    try {
+      const data = await searchDirectoryNodes(trimmed)
+      runInAction(() => {
+        this.directorySearchResults = data.items
+        this.directorySearching = false
+      })
+    } catch {
+      runInAction(() => {
+        this.directorySearchResults = []
+        this.directorySearching = false
+      })
+    }
+  }
+
+  clearDirectorySearch() {
+    this.directorySearchResults = []
+    this.directorySearching = false
+  }
+
   getNodeLevel(tree: TreeNode[], targetKey: string, level = 0): number {
     for (const node of tree) {
       if (node.key === targetKey) return level
@@ -103,6 +135,39 @@ class KnowledgeStore {
       }
     }
     return -1
+  }
+
+  findNodeById(key: string): TreeNode | null {
+    const search = (nodes: TreeNode[]): TreeNode | null => {
+      for (const node of nodes) {
+        if (node.key === key) return node
+        if (node.children) {
+          const found = search(node.children)
+          if (found) return found
+        }
+      }
+      return null
+    }
+    return search(this.directoryTree)
+  }
+
+  getNodePath(key: string): { title: string; key: string }[] {
+    const path: { title: string; key: string }[] = []
+    const search = (nodes: TreeNode[], ancestors: { title: string; key: string }[]): boolean => {
+      for (const node of nodes) {
+        const current = [...ancestors, { title: node.title, key: node.key }]
+        if (node.key === key) {
+          path.push(...current)
+          return true
+        }
+        if (node.children && search(node.children, current)) {
+          return true
+        }
+      }
+      return false
+    }
+    search(this.directoryTree, [])
+    return path
   }
 
   isDescendantOf(ancestorKey: string, descendantKey: string): boolean {
