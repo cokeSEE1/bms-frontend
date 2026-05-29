@@ -133,7 +133,7 @@ const PaginationWrapper = styled.div`
   padding: 16px 0;
 `
 
-const SkeletonCard = styled.div`
+const SkeletonCard = styled.div<{ faded?: boolean }>`
   display: flex;
   gap: 10px;
   padding: 16px;
@@ -141,6 +141,7 @@ const SkeletonCard = styled.div`
   border: 1px solid ${COLOR_BORDER_WARM};
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  opacity: ${({ faded }) => (faded ? 0.5 : 1)};
 `
 
 const SkeletonIcon = styled.div`
@@ -165,6 +166,12 @@ const SkeletonLine = styled.div<{ width: string; height?: string }>`
 
 const SkeletonLineLight = styled(SkeletonLine)`
   background: #f5f5f5;
+`
+
+const SkeletonMetaRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
 `
 
 const LoadingText = styled.div`
@@ -237,10 +244,10 @@ const SkeletonList = () => (
         <SkeletonLine width="55%" height="16px" />
         <SkeletonLineLight width="100%" />
         <SkeletonLineLight width="45%" />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+        <SkeletonMetaRow>
           <SkeletonLineLight width="30%" height="10px" />
           <SkeletonLineLight width="20%" height="10px" />
-        </div>
+        </SkeletonMetaRow>
       </SkeletonBody>
     </SkeletonCard>
     <SkeletonCard>
@@ -249,13 +256,13 @@ const SkeletonList = () => (
         <SkeletonLine width="48%" height="16px" />
         <SkeletonLineLight width="100%" />
         <SkeletonLineLight width="38%" />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+        <SkeletonMetaRow>
           <SkeletonLineLight width="28%" height="10px" />
           <SkeletonLineLight width="18%" height="10px" />
-        </div>
+        </SkeletonMetaRow>
       </SkeletonBody>
     </SkeletonCard>
-    <SkeletonCard style={{ opacity: 0.5 }}>
+    <SkeletonCard faded>
       <SkeletonIcon />
       <SkeletonBody>
         <SkeletonLine width="52%" height="16px" />
