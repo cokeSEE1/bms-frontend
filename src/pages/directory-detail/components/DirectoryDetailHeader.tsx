@@ -1,28 +1,26 @@
-import { Breadcrumb, Input, Segmented, Select } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+// src/pages/directory-detail/components/DirectoryDetailHeader.tsx
+import { Breadcrumb } from 'antd'
 import { observer } from 'mobx-react-lite'
 import { knowledgeStore } from '../../../stores/knowledgeStore'
 import { directoryDetailStore } from '../../../stores/directoryDetailStore'
 import {
   HeaderContainer,
   HeaderLeft,
+  DirectoryTitle,
   HeaderRight,
-  SearchInput,
+  SortTabs,
+  SortTab,
 } from './DirectoryDetailHeader.style'
 
 interface DirectoryDetailHeaderProps {
   dirId: string
 }
 
-const viewOptions = [
-  { label: '列表', value: 'list' },
-  { label: '紧凑', value: 'table' },
-]
-
-const sortFieldOptions = [
-  { label: '更新时间', value: 'updateTime' },
-  { label: '名称', value: 'name' },
-  { label: '浏览量', value: 'viewCount' },
+const SORT_OPTIONS: { key: string; label: string }[] = [
+  { key: 'name', label: '文件名排序' },
+  { key: 'createTime', label: '最新创建' },
+  { key: 'updateTime', label: '最近更新' },
+  { key: 'viewCount', label: '最高浏览' },
 ]
 
 const DirectoryDetailHeader = observer(({ dirId }: DirectoryDetailHeaderProps) => {
@@ -39,41 +37,26 @@ const DirectoryDetailHeader = observer(({ dirId }: DirectoryDetailHeaderProps) =
             ...breadcrumbs.slice(0, -1).map((b) => ({
               title: <a href={`/dashboard/directory/${b.key}`}>{b.title}</a>,
             })),
-            { title: title },
           ]}
         />
+        <DirectoryTitle>{title}</DirectoryTitle>
       </HeaderLeft>
       <HeaderRight>
-        <SearchInput>
-          <Input
-            prefix={<SearchOutlined />}
-            placeholder="搜索知识..."
-            value={directoryDetailStore.keyword}
-            onChange={(e) => {
-              directoryDetailStore.setKeyword(e.target.value)
-            }}
-            allowClear
-            onClear={() => {
-              directoryDetailStore.setKeyword('')
-            }}
-          />
-        </SearchInput>
-        <Segmented
-          options={viewOptions}
-          value={directoryDetailStore.viewType}
-          onChange={(val) => directoryDetailStore.setViewType(val as 'list' | 'table')}
-        />
-        <Select
-          value={directoryDetailStore.sortField}
-          onChange={(val) => {
-            directoryDetailStore.setSortField(val)
-            directoryDetailStore.setPage(1)
-            directoryDetailStore.fetchList()
-          }}
-          options={sortFieldOptions}
-          style={{ width: 120 }}
-          size="small"
-        />
+        <SortTabs>
+          {SORT_OPTIONS.map((opt) => (
+            <SortTab
+              key={opt.key}
+              active={directoryDetailStore.sortField === opt.key}
+              onClick={() => {
+                directoryDetailStore.setSortField(opt.key)
+                directoryDetailStore.setPage(1)
+                directoryDetailStore.fetchList()
+              }}
+            >
+              {opt.label}
+            </SortTab>
+          ))}
+        </SortTabs>
       </HeaderRight>
     </HeaderContainer>
   )

@@ -44,7 +44,7 @@ describe('DirectoryDetailPage', () => {
     })
   })
 
-  it('renders breadcrumb path', async () => {
+  it('renders breadcrumb path for child directory', async () => {
     renderComponent('2')
 
     await waitFor(() => {
@@ -61,45 +61,37 @@ describe('DirectoryDetailPage', () => {
     })
   })
 
+  it('renders sort tabs', async () => {
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('文件名排序')).toBeInTheDocument()
+      expect(screen.getByText('最新创建')).toBeInTheDocument()
+      expect(screen.getByText('最近更新')).toBeInTheDocument()
+      expect(screen.getByText('最高浏览')).toBeInTheDocument()
+    })
+  })
+
+  it('switches sort when clicking sort tab', async () => {
+    const user = userEvent.setup()
+    renderComponent()
+
+    await waitFor(() => {
+      expect(screen.getByText('前端性能优化实践指南')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByText('文件名排序'))
+
+    await waitFor(() => {
+      expect(screen.getByText('CI/CD 流水线搭建指南')).toBeInTheDocument()
+    })
+  })
+
   it('renders pagination when total > pageSize', async () => {
     renderComponent()
 
     await waitFor(() => {
       expect(screen.getByText(/共 25 条/)).toBeInTheDocument()
-    })
-  })
-
-  it('switches between list and table view', async () => {
-    const user = userEvent.setup()
-    renderComponent()
-
-    await waitFor(() => {
-      expect(screen.getByText('前端性能优化实践指南')).toBeInTheDocument()
-    })
-
-    const tableViewBtn = screen.getByText('紧凑')
-    await user.click(tableViewBtn)
-
-    await waitFor(() => {
-      const table = document.querySelector('.ant-table')
-      expect(table).toBeInTheDocument()
-    })
-  })
-
-  it('searches and filters items', async () => {
-    const user = userEvent.setup()
-    renderComponent()
-
-    await waitFor(() => {
-      expect(screen.getByText('前端性能优化实践指南')).toBeInTheDocument()
-    })
-
-    const searchInput = screen.getByPlaceholderText('搜索知识...')
-    await user.type(searchInput, 'React')
-
-    await waitFor(() => {
-      expect(screen.getByText('React 18 新特性详解')).toBeInTheDocument()
-      expect(screen.queryByText('前端性能优化实践指南')).not.toBeInTheDocument()
     })
   })
 

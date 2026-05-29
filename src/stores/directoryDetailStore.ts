@@ -10,17 +10,11 @@ class DirectoryDetailStore {
   loading: boolean = false
   page: number = 1
   pageSize: number = 20
-  keyword: string = ''
-  viewType: 'list' | 'table' = 'list'
   sortField: string = 'updateTime'
   sortOrder: 'ascend' | 'descend' = 'descend'
 
   constructor() {
     makeAutoObservable(this)
-  }
-
-  setViewType(viewType: 'list' | 'table') {
-    this.viewType = viewType
   }
 
   setSortField(sortField: string) {
@@ -31,10 +25,6 @@ class DirectoryDetailStore {
     this.sortOrder = sortOrder
   }
 
-  setKeyword(keyword: string) {
-    this.keyword = keyword
-  }
-
   setPage(page: number) {
     this.page = page
   }
@@ -42,7 +32,8 @@ class DirectoryDetailStore {
   async loadDetail(dirId: number) {
     this.dirId = dirId
     this.page = 1
-    this.keyword = ''
+    this.sortField = 'updateTime'
+    this.sortOrder = 'descend'
     await this.fetchList()
   }
 
@@ -56,7 +47,6 @@ class DirectoryDetailStore {
         pageSize: this.pageSize,
         sortField: this.sortField,
         sortOrder: this.sortOrder,
-        keyword: this.keyword,
       })
       runInAction(() => {
         this.items = res.items
@@ -76,8 +66,6 @@ class DirectoryDetailStore {
     this.total = 0
     this.loading = false
     this.page = 1
-    this.keyword = ''
-    this.viewType = 'list'
     this.sortField = 'updateTime'
     this.sortOrder = 'descend'
   }
