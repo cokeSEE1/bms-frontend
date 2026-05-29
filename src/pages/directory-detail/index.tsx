@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite'
 import DirectoryDetailHeader from './components/DirectoryDetailHeader'
 import KnowledgeListView from './components/KnowledgeListView'
 import { directoryDetailStore } from '../../stores/directoryDetailStore'
-import { PageContainer, PageBody, ContentCard } from './style'
+import { PageContainer, PageBody } from './style'
 
 const DirectoryDetailPage = observer(() => {
   const { dirId } = useParams<{ dirId: string }>()
@@ -27,19 +27,17 @@ const DirectoryDetailPage = observer(() => {
     <PageContainer>
       <DirectoryDetailHeader dirId={dirId} />
       <PageBody>
-        <ContentCard>
-          <KnowledgeListView
-            items={store.items}
-            total={store.total}
-            loading={store.loading}
-            page={store.page}
-            pageSize={store.pageSize}
-            onPageChange={(p) => {
-              store.setPage(p)
-              store.fetchList()
-            }}
-          />
-        </ContentCard>
+        <KnowledgeListView
+          items={store.items}
+          total={store.total}
+          loading={store.loading}
+          page={store.page}
+          pageSize={store.pageSize}
+          onPageChange={(p) => {
+            store.setPage(p)
+            store.fetchList()
+          }}
+        />
       </PageBody>
     </PageContainer>
   )

@@ -55,6 +55,7 @@ export const MainArea = styled.div`
   min-width: 0;
   overflow: hidden;
   background: ${COLOR_BG_CONTAINER};
+  padding: 8px 8px 0 0;
 `
 
 export const PanelArea = styled.div<{ visible?: boolean }>`
