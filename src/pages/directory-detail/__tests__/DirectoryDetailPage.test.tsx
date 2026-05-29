@@ -61,18 +61,17 @@ describe('DirectoryDetailPage', () => {
     })
   })
 
-  it('renders sort tabs', async () => {
+  it('renders sort pills', async () => {
     renderComponent()
 
     await waitFor(() => {
-      expect(screen.getByText('文件名排序')).toBeInTheDocument()
-      expect(screen.getByText('最新创建')).toBeInTheDocument()
+      expect(screen.getByText('文件名')).toBeInTheDocument()
       expect(screen.getByText('最近更新')).toBeInTheDocument()
       expect(screen.getByText('最高浏览')).toBeInTheDocument()
     })
   })
 
-  it('switches sort when clicking sort tab', async () => {
+  it('switches sort when clicking sort pill', async () => {
     const user = userEvent.setup()
     renderComponent()
 
@@ -80,7 +79,7 @@ describe('DirectoryDetailPage', () => {
       expect(screen.getByText('前端性能优化实践指南')).toBeInTheDocument()
     })
 
-    await user.click(screen.getByText('文件名排序'))
+    await user.click(screen.getByText('文件名'))
 
     await waitFor(() => {
       expect(screen.getByText('CI/CD 流水线搭建指南')).toBeInTheDocument()
