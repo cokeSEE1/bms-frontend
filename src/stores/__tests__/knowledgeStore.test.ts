@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { runInAction } from 'mobx'
-import { knowledgeStore, MAX_TREE_LEVEL } from '../knowledgeStore'
-import type { KnowledgeCard, TreeNode } from '../../service/home'
+import { knowledgeStore } from '../knowledgeStore'
+import type { KnowledgeCard } from '../../service/home'
 
 const MOCK_CARDS: KnowledgeCard[] = [
   {
@@ -74,23 +74,11 @@ describe('knowledgeStore', () => {
 })
 
 describe('knowledgeStore - moveNode', () => {
-  beforeEach(() => {
-    runInAction(() => {
-      knowledgeStore.directoryTree = [
-        {
-          title: 'Root', key: '1', dirType: 0,
-          children: [
-            { title: 'Child A', key: '2', dirType: 0 },
-            { title: 'Child B', key: '3', dirType: 0 },
-          ],
-        },
-        { title: 'Sibling', key: '4', dirType: 0 },
-      ]
-    })
-  })
-
-  it('moveNode calls moveDirectoryNode and reloads tree', async () => {
+  it('returns a promise when called', () => {
     expect(typeof knowledgeStore.moveNode).toBe('function')
+    const result = knowledgeStore.moveNode(1, 2, 'above')
+    expect(result).toBeInstanceOf(Promise)
+    result.catch(() => {}) // suppress unhandled rejection from unmocked API call
   })
 })
 
