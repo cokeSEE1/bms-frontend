@@ -8,6 +8,7 @@ class DirectoryDetailStore {
   items: KnowledgeItem[] = []
   total: number = 0
   loading: boolean = false
+  lastUpdateTime: string = ''
   page: number = 1
   pageSize: number = 20
   sortField: string = 'updateTime'
@@ -52,6 +53,11 @@ class DirectoryDetailStore {
         this.items = res.items
         this.total = res.total
         this.loading = false
+        if (res.items.length > 0) {
+          this.lastUpdateTime = res.items.reduce((latest, item) =>
+            item.updateTime > latest ? item.updateTime : latest,
+          res.items[0].updateTime)
+        }
       })
     } catch {
       runInAction(() => {
@@ -68,6 +74,7 @@ class DirectoryDetailStore {
     this.page = 1
     this.sortField = 'updateTime'
     this.sortOrder = 'descend'
+    this.lastUpdateTime = ''
   }
 }
 

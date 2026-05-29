@@ -59,6 +59,13 @@ const home = {
     originalCount: '原创量',
     readCount: '被阅读量',
   },
+  directoryDetail: {
+    emptyTitle: '此目录暂无内容',
+    emptyDescription: '向该目录添加第一条知识条目',
+    newKnowledge: '新建知识条目',
+    sort: '排序',
+    loading: '正在加载知识列表...',
+  },
 } as const
 
 export default home
