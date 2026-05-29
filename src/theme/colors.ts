@@ -52,3 +52,8 @@ export const COLOR_BTN_GRADIENT_END = COLOR_BRAND_GRADIENT_END
 
 /** 紫色标签（侧边栏目录 tag 背景） */
 export const COLOR_TAG_BG = '#432fcd'
+
+/** Header 渐变背景（左冷→中暖白→右暖） */
+export const COLOR_HEADER_GRADIENT_START = '#eaf0f3'
+export const COLOR_HEADER_GRADIENT_MID = '#fdfbf8'
+export const COLOR_HEADER_GRADIENT_END = '#f2eee7'

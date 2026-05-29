@@ -7,9 +7,16 @@ class HomeStore {
   searchKeyword = ''
   selectedCatalogKey = ''
   catalogSearchKeyword = ''
+  sidebarCollapsed = false
 
   constructor() {
     makeAutoObservable(this)
+    const saved = localStorage.getItem('sidebarCollapsed')
+    if (saved !== null) {
+      this.sidebarCollapsed = saved === 'true'
+    } else if (typeof window !== 'undefined' && window.innerWidth < 1366) {
+      this.sidebarCollapsed = true
+    }
   }
 
   setActivePushTab(tab: 'mustread' | 'subscribe') {
@@ -30,6 +37,11 @@ class HomeStore {
 
   setCatalogSearchKeyword(keyword: string) {
     this.catalogSearchKeyword = keyword
+  }
+
+  toggleSidebar() {
+    this.sidebarCollapsed = !this.sidebarCollapsed
+    localStorage.setItem('sidebarCollapsed', String(this.sidebarCollapsed))
   }
 }
 

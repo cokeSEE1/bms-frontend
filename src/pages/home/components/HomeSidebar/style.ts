@@ -16,7 +16,7 @@ export const SidebarContainer = styled.aside`
   flex-direction: column;
   height: 100%;
   background: ${COLOR_SURFACE_COOL};
-  border-radius: 16px 0 0 0;
+  border-radius: 12px;
   overflow-y: auto;
 `
 
@@ -104,6 +104,7 @@ export const CatalogTitle = styled.span`
   color: ${COLOR_TEXT};
   padding: 0 16px;
 `
+
 
 export const ExpandBtn = styled.button`
   display: flex;

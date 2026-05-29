@@ -1,13 +1,15 @@
 // src/pages/home/components/HomeHeader/style.ts
 import styled from '@emotion/styled'
 import {
-  COLOR_BG_CONTAINER,
   COLOR_PRIMARY,
   COLOR_TEXT,
   COLOR_TEXT_SECONDARY,
   COLOR_SEARCH_BG,
   COLOR_PLACEHOLDER,
   COLOR_SEARCH_ICON,
+  COLOR_HEADER_GRADIENT_START,
+  COLOR_HEADER_GRADIENT_MID,
+  COLOR_HEADER_GRADIENT_END,
 } from '../../../../theme/colors'
 
 export const HeaderBar = styled.header`
@@ -15,9 +17,20 @@ export const HeaderBar = styled.header`
   align-items: center;
   justify-content: space-between;
   padding: 8px 24px 8px 16px;
-  background: ${COLOR_BG_CONTAINER};
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(
+    105deg,
+    ${COLOR_HEADER_GRADIENT_START} 0%,
+    ${COLOR_HEADER_GRADIENT_MID} 45%,
+    ${COLOR_HEADER_GRADIENT_MID} 65%,
+    ${COLOR_HEADER_GRADIENT_END} 100%
+  );
+  border-bottom: 1px solid rgba(26, 58, 74, 0.08);
+  box-shadow: 0 1px 4px rgba(26, 58, 74, 0.04);
   flex-shrink: 0;
+
+  @media (max-width: 1200px) {
+    padding: 8px 16px 8px 8px;
+  }
 `
 
 export const NavTabs = styled.nav`
@@ -56,7 +69,9 @@ export const NavTab = styled.button<{ active: boolean }>`
 `
 
 export const SearchWrapper = styled.div`
-  width: 560px;
+  flex: 1;
+  max-width: 560px;
+  min-width: 200px;
 
   .ant-input-affix-wrapper {
     height: 40px;

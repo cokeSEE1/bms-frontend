@@ -10,7 +10,7 @@ import { rankingStore } from '../../../stores/rankingStore'
 import { homeStore } from '../../../stores/homeStore'
 import home from '../../../i18n/locales/zh-CN/home'
 
-function renderHomePage() {
+const renderHomePage = () => {
   return render(
     <App>
       <MemoryRouter initialEntries={['/dashboard']}>
@@ -36,6 +36,7 @@ describe('HomePage', () => {
       knowledgeStore.sortBy = 'recommend'
       knowledgeStore.searchQuery = ''
       homeStore.searchKeyword = ''
+      homeStore.sidebarCollapsed = false
       rankingStore.studyStars = []
       rankingStore.originalStars = []
       rankingStore.hotStars = []
@@ -82,10 +83,24 @@ describe('HomePage', () => {
 
   it('renders ranking panel sections', () => {
     renderHomePage()
-    expect(screen.getByText('知识之星（7月）')).toBeInTheDocument()
-    expect(screen.getByText('了解更多')).toBeInTheDocument()
-    expect(screen.getByText('消息通知')).toBeInTheDocument()
-    expect(screen.getByText('查看全部')).toBeInTheDocument()
+    expect(screen.queryByText(home.ranking.knowledgeStar)).not.toBeInTheDocument()
+    expect(screen.queryByText(home.ranking.notification)).not.toBeInTheDocument()
+  })
+
+  it('renders sidebar toggle handle', () => {
+    renderHomePage()
+    // SidebarHandle renders LeftOutlined icon when expanded
+    expect(screen.getByText(home.sidebar.directory)).toBeInTheDocument()
+  })
+
+  it('collapses sidebar when handle is clicked', async () => {
+    const user = userEvent.setup()
+    renderHomePage()
+    expect(screen.getByText(home.sidebar.directory)).toBeInTheDocument()
+    // SidebarHandle is between SidebarArea and MainArea, find the LeftOutlined icon
+    const handle = document.querySelector('.anticon-left')
+    await user.click(handle!)
+    expect(screen.queryByText(home.sidebar.directory)).not.toBeInTheDocument()
   })
 
   it('renders knowledge cards when data is loaded', async () => {

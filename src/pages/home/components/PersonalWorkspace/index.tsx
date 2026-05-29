@@ -1,11 +1,11 @@
-// src/pages/home/components/PersonalWorkspace/index.tsx
+import { Row } from 'antd'
 import { RightOutlined } from '@ant-design/icons'
 import home from '../../../../i18n/locales/zh-CN/home'
 import {
   Container,
   Title,
-  Content,
-  DataSection,
+  DataCol,
+  PartCol,
   DataHeader,
   DataTitle,
   DetailLink,
@@ -14,7 +14,6 @@ import {
   StatValue,
   StatLabel,
   CreateBtn,
-  ParticipationSection,
   PartHeader,
   PartTitle,
   PartGrid,
@@ -42,12 +41,12 @@ const MOCK_PARTICIPATED = [
   { id: '4', title: '测试流程文档', desc: '更新日期：2026-05-12' },
 ]
 
-function PersonalWorkspace() {
+const PersonalWorkspace = () => {
   return (
     <Container>
       <Title>{home.workspace.title}</Title>
-      <Content>
-        <DataSection>
+      <Row gutter={{ xs: 16, sm: 16, md: 16, lg: 24, xl: 32, xxl: 32 }}>
+        <DataCol xl={8} xxl={8} md={24} lg={24} sm={24} xs={24}>
           <DataHeader>
             <DataTitle>{home.workspace.data}</DataTitle>
             <DetailLink>{home.workspace.viewDetail}</DetailLink>
@@ -64,9 +63,9 @@ function PersonalWorkspace() {
             {home.workspace.createKnowledge}
             <RightOutlined style={{ fontSize: 14 }} />
           </CreateBtn>
-        </DataSection>
+        </DataCol>
 
-        <ParticipationSection>
+        <PartCol xl={16} xxl={16} md={24} lg={24} sm={24} xs={24}>
           <PartHeader>
             <PartTitle>{home.workspace.myParticipation}</PartTitle>
           </PartHeader>
@@ -78,8 +77,8 @@ function PersonalWorkspace() {
               </PartCard>
             ))}
           </PartGrid>
-        </ParticipationSection>
-      </Content>
+        </PartCol>
+      </Row>
     </Container>
   )
 }
