@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import { Pagination } from 'antd'
 import { UserOutlined, ClockCircleOutlined, EyeOutlined, LikeOutlined, PlusOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
+import { useNavigate } from 'react-router-dom'
 import type { KnowledgeItem } from '../../../service/knowledge'
 import {
   COLOR_PRIMARY,
@@ -181,6 +182,20 @@ const LoadingText = styled.div`
   margin-top: 4px;
 `
 
+const TopLoadingBar = styled.div`
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, ${COLOR_PRIMARY}22, ${COLOR_PRIMARY}, ${COLOR_PRIMARY}22);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 2px;
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+`
+
 const EmptyWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -282,7 +297,9 @@ const KnowledgeListView = ({
   pageSize,
   onPageChange,
 }: KnowledgeListViewProps) => {
-  if (loading) {
+  const navigate = useNavigate()
+
+  if (loading && items.length === 0) {
     return <SkeletonList />
   }
 
@@ -304,8 +321,9 @@ const KnowledgeListView = ({
 
   return (
     <ListContainer>
+      {loading && <TopLoadingBar />}
       {items.map((item) => (
-        <Card key={item.id}>
+        <Card key={item.id} onClick={() => navigate(`/dashboard/knowledge/${item.id}`)}>
           <CardIcon>
             <img src={docRichtextIcon} alt="" />
           </CardIcon>

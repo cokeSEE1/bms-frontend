@@ -4,6 +4,7 @@ import RegisterPage from '../pages/register'
 import DashboardLayout from '../layouts/DashboardLayout'
 import HomePage from '../pages/home'
 import DirectoryDetailPage from '../pages/directory-detail'
+import KnowledgeDetailPage from '../pages/knowledge-detail'
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: 'directory/:dirId',
         element: <DirectoryDetailPage />,
+      },
+      {
+        path: 'knowledge/:knowledgeId',
+        element: <KnowledgeDetailPage />,
       },
     ],
   },
