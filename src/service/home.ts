@@ -45,87 +45,57 @@ interface DirectoryTreeNodeBackend {
   children: DirectoryTreeNodeBackend[]
 }
 
-const mockCards: KnowledgeCard[] = [
-  {
-    id: '1',
-    title: '知识库使用指南与最佳实践',
-    description: '本文档介绍了知识库的基本使用方法，包括知识创建、分类管理、权限设置等核心功能，帮助团队快速上手并规范知识管理流程。',
-    tags: ['置顶', '必读'],
-    docType: 'richtext',
-    author: { name: '张三' },
-    views: 1256,
-    likes: 89,
-    createdAt: '2026-05-20T08:00:00Z',
-    isLocked: true,
-  },
-  {
-    id: '2',
-    title: '2026年Q2技术分享计划',
-    description: '本季度技术分享安排包括前端性能优化实践、后端微服务架构演进、AI在知识管理中的应用等主题，欢迎报名参加。',
-    tags: ['热门', '订阅'],
-    docType: 'pdf',
-    author: { name: '李四' },
-    views: 892,
-    likes: 56,
-    createdAt: '2026-05-18T10:30:00Z',
-    isLocked: false,
-  },
-  {
-    id: '3',
-    title: '产品需求文档模板与规范',
-    description: '标准化的产品需求文档模板，包含需求背景、功能描述、交互流程、验收标准等章节，适用于所有产品线。',
-    tags: ['第三方系统'],
-    docType: 'word',
-    author: { name: '王五' },
-    views: 654,
-    likes: 42,
-    createdAt: '2026-05-15T14:00:00Z',
-    isLocked: false,
-  },
-  {
-    id: '4',
-    title: '前端代码规范与审查清单',
-    description: '团队前端开发规范文档，涵盖命名规范、组件设计原则、状态管理最佳实践、代码审查要点等内容。',
-    tags: ['热门'],
-    docType: 'richtext',
-    author: { name: '赵六' },
-    views: 431,
-    likes: 35,
-    createdAt: '2026-05-12T09:00:00Z',
-    isLocked: true,
-  },
-  {
-    id: '5',
-    title: 'Q1数据分析报告汇总',
-    description: '第一季度各业务线关键数据指标汇总分析，涵盖用户增长、内容消费、搜索转化等维度的数据洞察。',
-    tags: ['订阅'],
-    docType: 'excel',
-    author: { name: '孙七' },
-    views: 321,
-    likes: 28,
-    createdAt: '2026-05-10T16:00:00Z',
-    isLocked: false,
-  },
-]
+export type GetKnowledgeCardsParams = {
+  tab: 'push' | 'trajectory'
+  subTab: string
+  sortBy: 'recommend' | 'likes' | 'latest'
+}
 
-const mockStudyStars: RankUser[] = [
-  { rank: 1, name: '张伟', department: '技术部', count: 328 },
-  { rank: 2, name: '李娜', department: '产品部', count: 256 },
-  { rank: 3, name: '王强', department: '运营部', count: 189 },
-]
+const SORT_BY_MAP: Record<string, number> = {
+  recommend: 0,
+  likes: 1,
+  latest: 2,
+}
 
-const mockOriginalStars: RankUser[] = [
-  { rank: 1, name: '陈明', department: '技术部', count: 45 },
-  { rank: 2, name: '刘洋', department: '设计部', count: 32 },
-  { rank: 3, name: '周洁', department: '产品部', count: 21 },
-]
+interface KnowledgeListRawItem {
+  id: number
+  name: string
+  abstract: string | null
+  author: string | null
+  tag_ids: string | null
+  knowledge_type: number
+  view_count: number
+  like_count: number
+  create_time: string
+  status: number
+}
 
-const mockHotStars: RankUser[] = [
-  { rank: 1, name: '李四', department: '技术部', count: 892 },
-  { rank: 2, name: '张三', department: '技术部', count: 756 },
-  { rank: 3, name: '王五', department: '产品部', count: 654 },
-]
+const mapToCard = (raw: KnowledgeListRawItem): KnowledgeCard => ({
+  id: String(raw.id),
+  title: raw.name,
+  description: raw.abstract ?? '',
+  tags: raw.tag_ids ? raw.tag_ids.split(',').filter(Boolean) : [],
+  docType: 'richtext',
+  author: { name: raw.author ?? '' },
+  views: raw.view_count,
+  likes: raw.like_count,
+  createdAt: raw.create_time,
+  isLocked: false,
+})
 
+export const getKnowledgeCards = async (params: GetKnowledgeCardsParams): Promise<KnowledgeCard[]> => {
+  const { data } = await client.get<{ total: number; items: KnowledgeListRawItem[] }>('/v1/knowledge/list', {
+    params: {
+      page: 1,
+      page_size: 20,
+      sort_by: SORT_BY_MAP[params.sortBy] ?? 0,
+      order_by: 0,
+      status: 3,
+    },
+  })
+  return data.items.map(mapToCard)
+}
+// TODO: implement notifications API
 const mockNotifications: NotificationItem[] = [
   { id: 'n1', title: '系统将于本周六进行维护升级', time: '2026-05-27 14:00', isRead: false },
   { id: 'n2', title: '新版本知识库功能已上线', time: '2026-05-26 09:00', isRead: false },
@@ -133,15 +103,19 @@ const mockNotifications: NotificationItem[] = [
   { id: 'n4', title: '知识库使用培训通知', time: '2026-05-24 10:00', isRead: true },
 ]
 
-export type GetKnowledgeCardsParams = {
-  tab: 'push' | 'trajectory'
-  subTab: string
-  sortBy: 'recommend' | 'likes' | 'latest'
+interface RankUserBackend {
+  rank: number
+  name: string
+  department: string
+  count: number
 }
 
-export const getKnowledgeCards = async (_params: GetKnowledgeCardsParams): Promise<KnowledgeCard[]> => {
-  return Promise.resolve(mockCards)
-}
+const mapRankUser = (raw: RankUserBackend): RankUser => ({
+  rank: raw.rank as 1 | 2 | 3,
+  name: raw.name,
+  department: raw.department,
+  count: raw.count,
+})
 
 const mapDirectoryTreeNode = (backendNode: DirectoryTreeNodeBackend): TreeNode => {
   return {
@@ -159,15 +133,24 @@ export const getDirectoryTree = async (): Promise<TreeNode[]> => {
 }
 
 export const getStudyStars = async (): Promise<RankUser[]> => {
-  return Promise.resolve(mockStudyStars)
+  const { data } = await client.get<{ items: RankUserBackend[] }>('/v1/rankings/reading-stars', {
+    params: { limit: 3 },
+  })
+  return data.items.map(mapRankUser)
 }
 
 export const getOriginalStars = async (): Promise<RankUser[]> => {
-  return Promise.resolve(mockOriginalStars)
+  const { data } = await client.get<{ items: RankUserBackend[] }>('/v1/rankings/original-stars', {
+    params: { limit: 3 },
+  })
+  return data.items.map(mapRankUser)
 }
 
 export const getHotStars = async (): Promise<RankUser[]> => {
-  return Promise.resolve(mockHotStars)
+  const { data } = await client.get<{ items: RankUserBackend[] }>('/v1/rankings/hot-stars', {
+    params: { limit: 3 },
+  })
+  return data.items.map(mapRankUser)
 }
 
 export const getNotifications = async (): Promise<NotificationItem[]> => {
@@ -184,8 +167,8 @@ export const createDirectoryNode = async (params: { parent_id: number; dir_name:
   return mapDirectoryTreeNode(data)
 }
 
-export const renameDirectoryNode = async (_params: { dir_id: number; dir_name: string }): Promise<void> => {
-  return Promise.resolve()
+export const renameDirectoryNode = async (params: { dir_id: number; dir_name: string }): Promise<void> => {
+  await client.put('/v1/directory/node', params)
 }
 
 export const deleteDirectoryNode = async (dir_id: number): Promise<void> => {
@@ -252,4 +235,36 @@ const mockDirectoryFavorites: DirectoryFavoriteItem[] = [
 
 export const getDirectoryFavoriteList = async (): Promise<DirectoryFavoriteListResponse> => {
   return Promise.resolve({ items: mockDirectoryFavorites })
+}
+
+// ── User Stats ──
+
+export interface UserStats {
+  readCount: number
+  originalCount: number
+  totalReadCount: number
+}
+
+export interface ParticipatedItem {
+  id: number
+  name: string
+  updateTime: string
+}
+
+export const getUserStats = async (): Promise<UserStats> => {
+  const { data } = await client.get<any>('/v1/user/stats')
+  return {
+    readCount: data.read_count,
+    originalCount: data.original_count,
+    totalReadCount: data.total_read_count,
+  }
+}
+
+export const getParticipated = async (): Promise<ParticipatedItem[]> => {
+  const { data } = await client.get<any>('/v1/user/participated')
+  return data.items.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    updateTime: item.update_time,
+  }))
 }

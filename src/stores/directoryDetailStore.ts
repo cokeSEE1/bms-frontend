@@ -31,6 +31,7 @@ class DirectoryDetailStore {
   }
 
   async loadDetail(dirId: number) {
+    if (this.dirId === dirId && this.items.length > 0) return
     this.dirId = dirId
     this.page = 1
     this.sortField = 'updateTime'

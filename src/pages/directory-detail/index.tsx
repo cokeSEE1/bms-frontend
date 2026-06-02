@@ -14,10 +14,13 @@ const DirectoryDetailPage = observer(() => {
     if (dirId) {
       directoryDetailStore.loadDetail(Number(dirId))
     }
+  }, [dirId])
+
+  useEffect(() => {
     return () => {
       directoryDetailStore.reset()
     }
-  }, [dirId])
+  }, [])
 
   if (!dirId) return null
 

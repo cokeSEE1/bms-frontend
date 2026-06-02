@@ -33,8 +33,10 @@ describe('HomePage', () => {
     runInAction(() => {
       knowledgeStore.cards = []
       knowledgeStore.loading = false
+      knowledgeStore.searchLoading = false
       knowledgeStore.sortBy = 'recommend'
       knowledgeStore.searchQuery = ''
+      knowledgeStore.searchResults = []
       homeStore.searchKeyword = ''
       homeStore.sidebarCollapsed = false
       rankingStore.studyStars = []
@@ -83,8 +85,8 @@ describe('HomePage', () => {
 
   it('renders ranking panel sections', () => {
     renderHomePage()
-    expect(screen.queryByText(home.ranking.knowledgeStar)).not.toBeInTheDocument()
-    expect(screen.queryByText(home.ranking.notification)).not.toBeInTheDocument()
+    expect(screen.getByText(home.ranking.knowledgeStar)).toBeInTheDocument()
+    expect(screen.getByText(home.ranking.notification)).toBeInTheDocument()
   })
 
   it('renders sidebar toggle handle', () => {
@@ -107,16 +109,17 @@ describe('HomePage', () => {
     runInAction(() => {
       knowledgeStore.cards = [
         {
-          id: '1',
-          title: '测试知识卡片',
-          description: '这是一个测试描述',
+          id: 1,
+          name: '测试知识卡片',
+          abstract: '这是一个测试描述',
           tags: ['置顶'],
-          docType: 'richtext' as const,
-          author: { name: '测试用户' },
-          views: 100,
-          likes: 10,
-          createdAt: '2026-05-20T08:00:00Z',
-          isLocked: true,
+          author: '测试用户',
+          viewCount: 100,
+          likeCount: 10,
+          createTime: '2026-05-20T08:00:00Z',
+          updateTime: '2026-05-20T08:00:00Z',
+          dirType: 0,
+          status: 3,
         },
       ]
     })
@@ -124,7 +127,7 @@ describe('HomePage', () => {
     await waitFor(() => {
       expect(screen.getByText('测试知识卡片')).toBeInTheDocument()
       expect(screen.getByText('置顶')).toBeInTheDocument()
-      expect(screen.getAllByText('测试用户').length).toBeGreaterThanOrEqual(2)
+      expect(screen.getAllByText('测试用户').length).toBeGreaterThanOrEqual(1)
     })
   })
 
@@ -165,31 +168,48 @@ describe('HomePage', () => {
     runInAction(() => {
       knowledgeStore.cards = [
         {
-          id: '1',
-          title: 'React 入门指南',
-          description: 'React 基础知识',
+          id: 1,
+          name: 'React 入门指南',
+          abstract: 'React 基础知识',
           tags: ['置顶'],
-          docType: 'richtext' as const,
-          author: { name: '张三' },
-          views: 100,
-          likes: 10,
-          createdAt: '2026-05-20T08:00:00Z',
-          isLocked: false,
+          author: '张三',
+          viewCount: 100,
+          likeCount: 10,
+          createTime: '2026-05-20T08:00:00Z',
+          updateTime: '2026-05-20T08:00:00Z',
+          dirType: 0,
+          status: 3,
         },
         {
-          id: '2',
-          title: 'Vue 高级教程',
-          description: 'Vue 进阶内容',
+          id: 2,
+          name: 'Vue 高级教程',
+          abstract: 'Vue 进阶内容',
           tags: [],
-          docType: 'pdf' as const,
-          author: { name: '李四' },
-          views: 50,
-          likes: 5,
-          createdAt: '2026-05-21T08:00:00Z',
-          isLocked: false,
+          author: '李四',
+          viewCount: 50,
+          likeCount: 5,
+          createTime: '2026-05-21T08:00:00Z',
+          updateTime: '2026-05-21T08:00:00Z',
+          dirType: 0,
+          status: 3,
         },
       ]
       knowledgeStore.searchQuery = 'react'
+      knowledgeStore.searchResults = [
+        {
+          id: 1,
+          name: 'React 入门指南',
+          abstract: 'React 基础知识',
+          tags: ['置顶'],
+          author: '张三',
+          viewCount: 100,
+          likeCount: 10,
+          createTime: '2026-05-20T08:00:00Z',
+          updateTime: '2026-05-20T08:00:00Z',
+          dirType: 0,
+          status: 3,
+        },
+      ]
     })
     renderHomePage()
     await waitFor(() => {
@@ -201,22 +221,23 @@ describe('HomePage', () => {
 
   it('clears search and hides indicator when clear button is clicked', async () => {
     const user = userEvent.setup()
+    const card = {
+      id: 1,
+      name: 'React 入门指南',
+      abstract: 'React 基础知识',
+      tags: [],
+      author: '张三',
+      viewCount: 100,
+      likeCount: 10,
+      createTime: '2026-05-20T08:00:00Z',
+      updateTime: '2026-05-20T08:00:00Z',
+      dirType: 0,
+      status: 3,
+    }
     runInAction(() => {
-      knowledgeStore.cards = [
-        {
-          id: '1',
-          title: 'React 入门指南',
-          description: 'React 基础知识',
-          tags: [],
-          docType: 'richtext' as const,
-          author: { name: '张三' },
-          views: 100,
-          likes: 10,
-          createdAt: '2026-05-20T08:00:00Z',
-          isLocked: false,
-        },
-      ]
+      knowledgeStore.cards = [card]
       knowledgeStore.searchQuery = 'react'
+      knowledgeStore.searchResults = [card]
     })
     renderHomePage()
     await waitFor(() => {

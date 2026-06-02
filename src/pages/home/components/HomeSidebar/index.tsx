@@ -140,7 +140,6 @@ const CatalogNode = ({
   const [hovering, setHovering] = useState(false)
   const hasChildren = node.children && node.children.length > 0
   const isSelected = homeStore.selectedCatalogKey === node.key
-  const isRoot = level === 0
   const canAddChild = level < MAX_TREE_LEVEL
 
   const handleClick = useCallback(() => {
@@ -174,7 +173,7 @@ const CatalogNode = ({
         selected={isSelected}
         isDropTarget={dragOverKey === node.key}
         dropPosition={dragOverKey === node.key ? dropPosition : null}
-        draggable={!isRoot}
+        draggable
         onClick={handleClick}
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
@@ -217,13 +216,11 @@ const CatalogNode = ({
                 <PlusOutlined />
               </TreeItemActionBtn>
             )}
-            {!isRoot && (
-              <Dropdown menu={{ items: moreMenuItems }} trigger={['click']} placement="bottomRight">
-                <TreeItemActionBtn onClick={(e) => e.stopPropagation()}>
-                  <MoreOutlined />
-                </TreeItemActionBtn>
-              </Dropdown>
-            )}
+            <Dropdown menu={{ items: moreMenuItems }} trigger={['click']} placement="bottomRight">
+              <TreeItemActionBtn onClick={(e) => e.stopPropagation()}>
+                <MoreOutlined />
+              </TreeItemActionBtn>
+            </Dropdown>
           </TreeItemActions>
         )}
       </TreeItem>
@@ -479,7 +476,7 @@ function HomeSidebar({ collapsed = false }: { collapsed?: boolean }) {
       <CatalogSection>
         <CatalogHeader>
           <CatalogTitle>{home.sidebar.directory}</CatalogTitle>
-          <ExpandBtn onClick={() => onAdd('0')}>
+          <ExpandBtn onClick={() => onAdd(knowledgeStore.rootId || '0')}>
             <PlusOutlined style={{ fontSize: 16, color: '#5B6275' }} />
           </ExpandBtn>
         </CatalogHeader>

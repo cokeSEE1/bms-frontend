@@ -3,10 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { Input, Dropdown } from 'antd'
 import type { MenuProps } from 'antd'
 import { UserOutlined, LogoutOutlined, FolderOutlined, SearchOutlined, CaretDownFilled } from '@ant-design/icons'
-import { useLogout } from '../../../../service'
+import { observer } from 'mobx-react-lite'
 import home from '../../../../i18n/locales/zh-CN/home'
 import { homeStore } from '../../../../stores/homeStore'
 import { knowledgeStore } from '../../../../stores/knowledgeStore'
+import { authStore } from '../../../../stores/authStore'
 import logoUrl from '../../../../assets/logo.svg'
 import {
   HeaderBar,
@@ -20,24 +21,22 @@ import {
   Username,
 } from './style'
 
-const HomeHeader = () => {
+const HomeHeader = observer(() => {
   const navigate = useNavigate()
   const location = useLocation()
-  const username = localStorage.getItem('username') || ''
+  const username = authStore.user?.username || ''
 
   const isActive = (path: string) => {
     if (path === '/dashboard') return location.pathname === '/dashboard'
     return location.pathname.startsWith(path)
   }
 
-  const { logout } = useLogout()
-
   const handleLogout = async () => {
     try {
-      await logout()
-    } finally {
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
+      await authStore.logout()
+      navigate('/login', { replace: true })
+    } catch {
+      // API call failed, but still clear local state
       navigate('/login', { replace: true })
     }
   }
@@ -78,7 +77,7 @@ const HomeHeader = () => {
               knowledgeStore.clearSearch()
             }
           }}
-          onPressEnter={() => knowledgeStore.setSearchQuery(homeStore.searchKeyword)}
+          onPressEnter={() => knowledgeStore.searchByKeyword(homeStore.searchKeyword)}
           variant="borderless"
         />
       </SearchWrapper>
@@ -97,6 +96,6 @@ const HomeHeader = () => {
       </RightSection>
     </HeaderBar>
   )
-}
+})
 
 export default HomeHeader

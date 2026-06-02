@@ -184,6 +184,7 @@ export const TreeItem = styled.div<{ level: number; selected: boolean; isDropTar
   font-weight: ${({ selected }) => (selected ? 600 : 400)};
   font-size: 14px;
   line-height: 22px;
+  background: ${({ selected }) => (selected ? 'rgba(26, 58, 74, 0.06)' : 'transparent')};
   border-left: ${({ selected }) => (selected ? `2px solid ${COLOR_PRIMARY}` : '2px solid transparent')};
   transition: color 0.15s, background 0.15s;
   position: relative;

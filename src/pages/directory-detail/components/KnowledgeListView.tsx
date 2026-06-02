@@ -323,7 +323,7 @@ const KnowledgeListView = ({
     <ListContainer>
       {loading && <TopLoadingBar />}
       {items.map((item) => (
-        <Card key={item.id} onClick={() => navigate(`/dashboard/knowledge/${item.id}`)}>
+        <Card key={item.id} onClick={() => navigate(`/knowledge/${item.id}`)}>
           <CardIcon>
             <img src={docRichtextIcon} alt="" />
           </CardIcon>

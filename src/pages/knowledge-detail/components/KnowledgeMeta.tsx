@@ -1,15 +1,34 @@
-import { UserOutlined, ClockCircleOutlined, EyeOutlined, LikeOutlined } from '@ant-design/icons'
+import { observer } from 'mobx-react-lite'
+import {
+  UserOutlined,
+  ClockCircleOutlined,
+  EyeOutlined,
+  LikeOutlined,
+  StarOutlined,
+  ShareAltOutlined,
+  DownloadOutlined,
+  FileTextOutlined,
+} from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { MetaContainer, MetaItem, TagList, Tag } from '../style'
+import { knowledgeDetailStore } from '../../../stores/knowledgeDetailStore'
+import { MetaContainer, MetaItem, TagList, Tag, StatusBadge } from '../style'
+import i18n from '../../../i18n/locales/zh-CN/knowledgeDetail'
 import type { KnowledgeDetail } from '../../../service/knowledge'
 
 interface KnowledgeMetaProps {
   detail: KnowledgeDetail
 }
 
-const KnowledgeMeta = ({ detail }: KnowledgeMetaProps) => {
+const STATUS_LABELS: Record<number, string> = {
+  0: i18n.statusDraft,
+  1: i18n.statusPublished,
+  2: i18n.statusReviewing,
+}
+
+const KnowledgeMeta = observer(({ detail }: KnowledgeMetaProps) => {
+  const { displayLikeCount, displayFavoriteCount, displayShareNum } = knowledgeDetailStore
   const authorName =
-    detail.creatorUserInfo?.username || detail.creator || detail.author || '未知'
+    detail.creatorUserInfo?.username || detail.creator || detail.author || '-'
 
   return (
     <MetaContainer>
@@ -23,12 +42,31 @@ const KnowledgeMeta = ({ detail }: KnowledgeMetaProps) => {
       </MetaItem>
       <MetaItem>
         <EyeOutlined />
-        {detail.viewCount} 阅读
+        {detail.viewCount} {i18n.views}
       </MetaItem>
       <MetaItem>
         <LikeOutlined />
-        {detail.likeCount} 赞
+        {displayLikeCount} {i18n.likes}
       </MetaItem>
+      <MetaItem>
+        <StarOutlined />
+        {displayFavoriteCount} {i18n.favorites}
+      </MetaItem>
+      <MetaItem>
+        <ShareAltOutlined />
+        {displayShareNum} {i18n.shares}
+      </MetaItem>
+      <MetaItem>
+        <DownloadOutlined />
+        {detail.downloadNum} {i18n.downloads}
+      </MetaItem>
+      <MetaItem>
+        <FileTextOutlined />
+        v{detail.version}
+      </MetaItem>
+      <StatusBadge status={detail.status}>
+        {STATUS_LABELS[detail.status] ?? i18n.statusDraft}
+      </StatusBadge>
       {detail.tagNames && detail.tagNames.length > 0 && (
         <TagList>
           {detail.tagNames.map((tag) => (
@@ -38,6 +76,6 @@ const KnowledgeMeta = ({ detail }: KnowledgeMetaProps) => {
       )}
     </MetaContainer>
   )
-}
+})
 
 export default KnowledgeMeta

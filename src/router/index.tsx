@@ -5,6 +5,8 @@ import DashboardLayout from '../layouts/DashboardLayout'
 import HomePage from '../pages/home'
 import DirectoryDetailPage from '../pages/directory-detail'
 import KnowledgeDetailPage from '../pages/knowledge-detail'
+import KnowledgeNewPage from '../pages/knowledge-new'
+import PersonalPage from '../pages/personal'
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,14 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
   },
   {
+    path: '/knowledge/new',
+    element: <KnowledgeNewPage />,
+  },
+  {
+    path: '/knowledge/:knowledgeId',
+    element: <KnowledgeDetailPage />,
+  },
+  {
     path: '/dashboard',
     element: <DashboardLayout />,
     children: [
@@ -32,8 +42,8 @@ const router = createBrowserRouter([
         element: <DirectoryDetailPage />,
       },
       {
-        path: 'knowledge/:knowledgeId',
-        element: <KnowledgeDetailPage />,
+        path: 'personal/*',
+        element: <PersonalPage />,
       },
     ],
   },

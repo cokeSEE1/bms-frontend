@@ -1,5 +1,6 @@
 // src/pages/directory-detail/components/DirectoryDetailHeader.tsx
 import { HomeOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
 import { knowledgeStore } from '../../../stores/knowledgeStore'
 import { directoryDetailStore } from '../../../stores/directoryDetailStore'
@@ -35,6 +36,7 @@ interface DirectoryDetailHeaderProps {
 }
 
 const DirectoryDetailHeader = observer(({ dirId }: DirectoryDetailHeaderProps) => {
+  const navigate = useNavigate()
   const node = knowledgeStore.findNodeById(dirId)
   const breadcrumbs = knowledgeStore.getNodePath(dirId)
   const title = node?.title ?? ''
@@ -70,7 +72,7 @@ const DirectoryDetailHeader = observer(({ dirId }: DirectoryDetailHeaderProps) =
             </>
           )}
         </TitleLeft>
-        <NewKnowledgeBtn>+ 新建知识</NewKnowledgeBtn>
+        <NewKnowledgeBtn onClick={() => navigate(`/knowledge/new?cateId=${dirId}`)}>+ 新建知识</NewKnowledgeBtn>
       </TitleRow>
 
       <SortBar>

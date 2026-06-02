@@ -218,3 +218,87 @@ export const getKnowledgeDetail = async (knowledgeId: number): Promise<Knowledge
   })
   return mapDetail(data)
 }
+
+export const searchKnowledge = async (
+  keyword: string,
+  page = 1,
+  pageSize = 20,
+): Promise<KnowledgeListResponse> => {
+  const { data } = await client.get<any>('/v1/knowledge/search', {
+    params: { keyword, page, page_size: pageSize, status: 3 },
+  })
+  return {
+    items: data.items.map(mapItem),
+    total: data.total,
+  }
+}
+
+export const deleteKnowledgeItem = async (itemId: number): Promise<void> => {
+  await client.delete(`/v1/knowledge/item/${itemId}`)
+}
+
+export const updateKnowledgeItem = async (itemId: number, body: Record<string, unknown>): Promise<void> => {
+  await client.put(`/v1/knowledge/item/${itemId}`, body)
+}
+
+export const likeItem = async (itemId: number, action: 'like' | 'unlike'): Promise<void> => {
+  await client.post(`/v1/knowledge/item/${itemId}/like`, { action })
+}
+
+export const favoriteItem = async (itemId: number, action: 'favorite' | 'unfavorite'): Promise<void> => {
+  await client.post(`/v1/knowledge/item/${itemId}/favorite`, { action })
+}
+
+export const shareItem = async (itemId: number): Promise<void> => {
+  await client.post(`/v1/knowledge/item/${itemId}/share`)
+}
+
+// --- Comments ---
+
+export interface CommentItem {
+  id: number
+  knowledge_id: number
+  user_id: number
+  content: string
+  create_time: string
+}
+
+export interface CommentListResponse {
+  total: number
+  items: CommentItem[]
+}
+
+export const getComments = async (knowledgeId: number, page = 1, pageSize = 20): Promise<CommentListResponse> => {
+  const { data } = await client.get<CommentListResponse>('/v1/comments', {
+    params: { knowledge_id: knowledgeId, page, page_size: pageSize },
+  })
+  return data
+}
+
+export const postComment = async (knowledgeId: number, content: string): Promise<CommentItem> => {
+  const { data } = await client.post<CommentItem>('/v1/comments', {
+    knowledge_id: knowledgeId,
+    content,
+  })
+  return data
+}
+
+// --- Create Knowledge ---
+
+export interface CreateKnowledgeParams {
+  kb_id: number
+  cate_id?: number | null
+  name: string
+  content?: string | null
+  abstract?: string | null
+  author?: string | null
+  status?: number
+  knowledge_type?: number
+  dir_type?: number
+  tag_ids?: string | null
+}
+
+export const createKnowledgeItem = async (body: CreateKnowledgeParams): Promise<KnowledgeDetail> => {
+  const { data } = await client.post<KnowledgeDetailBackend>('/v1/knowledge/item', body)
+  return mapDetail(data)
+}

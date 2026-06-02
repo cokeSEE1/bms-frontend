@@ -10,7 +10,7 @@ const HomeMain = styled.div`
   padding: 12px;
   background: #ffffff;
   min-width: 0;
-  overflow-y: auto;
+  overflow: hidden;
 `
 
 const ContentWrapper = styled.div`

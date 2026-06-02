@@ -1,23 +1,21 @@
 // src/pages/home/components/KnowledgeWaterfall/index.tsx
 import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
 import { Button, Empty, Spin, Tag } from 'antd'
-import { UserOutlined, ClockCircleOutlined, EyeOutlined, LikeOutlined, LockOutlined } from '@ant-design/icons'
+import { UserOutlined, ClockCircleOutlined, EyeOutlined, LikeOutlined, FileTextOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { knowledgeStore } from '../../../../stores/knowledgeStore'
 import { homeStore } from '../../../../stores/homeStore'
 import home from '../../../../i18n/locales/zh-CN/home'
-import type { KnowledgeCard } from '../../../../service/home'
-import docRichtextIcon from '../../../../assets/icons/doc-richtext.svg'
-import docPdfIcon from '../../../../assets/icons/doc-pdf.svg'
-import docWordIcon from '../../../../assets/icons/doc-word.svg'
-import docExcelIcon from '../../../../assets/icons/doc-excel.svg'
+import type { KnowledgeItem } from '../../../../service/knowledge'
 import {
   Container,
   Header,
   Title,
   SortTabs,
   SortTab,
+  SpinWrapper,
   CardList,
   Card,
   CardTop,
@@ -48,13 +46,15 @@ const TAG_COLORS: Record<string, string> = {
   '第三方系统': 'geekblue',
 }
 
-const KnowledgeCardItem = React.memo(({ card }: { card: KnowledgeCard }) => {
+const KnowledgeCardItem = React.memo(({ card }: { card: KnowledgeItem }) => {
   return (
     <Card>
       <CardTop>
-        <DocIcon src={DOC_ICON_MAP[card.docType]} alt="" />
+        <DocIcon>
+          <FileTextOutlined />
+        </DocIcon>
         <CardTitleArea>
-          <CardTitleText href="#">{card.title}</CardTitleText>
+          <CardTitleText to={`/knowledge/${card.id}`}>{card.name}</CardTitleText>
           {card.tags.map((tag) => (
             <Tag key={tag} color={TAG_COLORS[tag] || 'default'} style={{ margin: 0, flexShrink: 0 }}>
               {tag}
@@ -66,43 +66,33 @@ const KnowledgeCardItem = React.memo(({ card }: { card: KnowledgeCard }) => {
         <MetaLeft>
           <MetaItem>
             <UserOutlined />
-            {card.author.name}
+            {card.author}
           </MetaItem>
           <MetaItem>
             <ClockCircleOutlined />
-            {dayjs(card.createdAt).format('YYYY-MM-DD')}
+            {dayjs(card.createTime).format('YYYY-MM-DD')}
           </MetaItem>
         </MetaLeft>
         <MetaRight>
           <MetaItem>
             <EyeOutlined />
-            {card.views}
+            {card.viewCount}
           </MetaItem>
           <MetaItem>
             <LikeOutlined />
-            {card.likes}
+            {card.likeCount}
           </MetaItem>
-          {card.isLocked && (
-            <MetaItem>
-              <LockOutlined />
-            </MetaItem>
-          )}
         </MetaRight>
       </CardMeta>
     </Card>
   )
 })
 
-const DOC_ICON_MAP: Record<KnowledgeCard['docType'], string> = {
-  richtext: docRichtextIcon,
-  pdf: docPdfIcon,
-  word: docWordIcon,
-  excel: docExcelIcon,
-}
-
 const KnowledgeWaterfall = () => {
+  const navigate = useNavigate()
+
   useEffect(() => {
-    knowledgeStore.loadCards({ tab: 'push', subTab: 'mustread', sortBy: knowledgeStore.sortBy })
+    knowledgeStore.loadCards()
   }, [knowledgeStore.sortBy])
 
   return (
@@ -122,34 +112,38 @@ const KnowledgeWaterfall = () => {
         </SortTabs>
       </Header>
 
-      <Spin spinning={knowledgeStore.loading}>
-        {knowledgeStore.searchQuery && (
-          <SearchIndicator>
-            <SearchInfo>
-              {home.waterfall.searchResult}：{knowledgeStore.filteredCards.length} 条
-            </SearchInfo>
-            <ClearButton
-              onClick={() => {
-                knowledgeStore.clearSearch()
-                homeStore.setSearchKeyword('')
-              }}
-            >
-              {home.waterfall.clearSearch}
-            </ClearButton>
-          </SearchIndicator>
-        )}
-        {knowledgeStore.filteredCards.length === 0 ? (
-          <EmptyWrapper>
-            <Empty description={home.waterfall.empty}>
-              <Button type="primary">{home.workspace.createKnowledge}</Button>
-            </Empty>
-          </EmptyWrapper>
-        ) : (
-          <CardList>
-            {knowledgeStore.filteredCards.map((card) => <KnowledgeCardItem key={card.id} card={card} />)}
-          </CardList>
-        )}
-      </Spin>
+      <SpinWrapper>
+        <Spin spinning={knowledgeStore.loading || knowledgeStore.searchLoading}>
+          {knowledgeStore.searchQuery && (
+            <SearchIndicator>
+              <SearchInfo>
+                {home.waterfall.searchResult}：{knowledgeStore.filteredCards.length} 条
+              </SearchInfo>
+              <ClearButton
+                onClick={() => {
+                  knowledgeStore.clearSearch()
+                  homeStore.setSearchKeyword('')
+                }}
+              >
+                {home.waterfall.clearSearch}
+              </ClearButton>
+            </SearchIndicator>
+          )}
+          {knowledgeStore.filteredCards.length === 0 ? (
+            <EmptyWrapper>
+              <Empty description={home.waterfall.empty}>
+                <Button type="primary" onClick={() => navigate('/knowledge/new')}>
+                  {home.workspace.createKnowledge}
+                </Button>
+              </Empty>
+            </EmptyWrapper>
+          ) : (
+            <CardList>
+              {knowledgeStore.filteredCards.map((card) => <KnowledgeCardItem key={card.id} card={card} />)}
+            </CardList>
+          )}
+        </Spin>
+      </SpinWrapper>
     </Container>
   )
 }

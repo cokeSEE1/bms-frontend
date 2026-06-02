@@ -8,7 +8,7 @@ import { homeStore } from '../stores/homeStore'
 import { DashboardShell, DashboardBody, SidebarArea, SidebarHandle, MainArea, PanelArea } from '../styles/layout'
 
 const DashboardLayout = observer(() => {
-  const rankingVisible = false
+  const rankingVisible = true
 
   return (
     <DashboardShell>

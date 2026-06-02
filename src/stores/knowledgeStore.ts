@@ -1,7 +1,6 @@
 // src/stores/knowledgeStore.ts
 import { makeAutoObservable, runInAction } from 'mobx'
 import {
-  getKnowledgeCards,
   getDirectoryTree,
   createDirectoryNode,
   renameDirectoryNode,
@@ -9,18 +8,31 @@ import {
   moveDirectoryNode,
   searchDirectoryNodes,
 } from '../service/home'
-import type { KnowledgeCard, TreeNode, GetKnowledgeCardsParams, MovePosition, DirectorySearchItem } from '../service/home'
+import type { TreeNode, MovePosition, DirectorySearchItem } from '../service/home'
+import { getKnowledgeList, searchKnowledge, type KnowledgeItem } from '../service/knowledge'
 
 const MAX_TREE_LEVEL = 5
 
+const SORT_CONFIG: Record<string, { sortField?: string; sortOrder?: 'ascend' | 'descend' }> = {
+  recommend: { sortField: 'viewCount', sortOrder: 'descend' },
+  likes: { sortField: undefined, sortOrder: 'descend' },
+  latest: { sortField: 'updateTime', sortOrder: 'descend' },
+}
+
 class KnowledgeStore {
-  cards: KnowledgeCard[] = []
+  cards: KnowledgeItem[] = []
   loading = false
   sortBy: 'recommend' | 'likes' | 'latest' = 'recommend'
+  selectedDirId = 0
+  directoryTreeRaw: TreeNode[] = []
   directoryTree: TreeNode[] = []
+  rootId: string | null = null
   directorySearchResults: DirectorySearchItem[] = []
   directorySearching = false
   searchQuery = ''
+  searchResults: KnowledgeItem[] = []
+  searchLoading = false
+  private searchTimer: ReturnType<typeof setTimeout> | null = null
 
   constructor() {
     makeAutoObservable(this)
@@ -30,12 +42,23 @@ class KnowledgeStore {
     this.sortBy = sort
   }
 
-  async loadCards(params: GetKnowledgeCardsParams) {
+  setSelectedDirId(dirId: number) {
+    this.selectedDirId = dirId
+  }
+
+  async loadCards() {
     this.loading = true
     try {
-      const data = await getKnowledgeCards(params)
+      const conf = SORT_CONFIG[this.sortBy]
+      const data = await getKnowledgeList({
+        dirId: this.selectedDirId || 0,
+        page: 1,
+        pageSize: 20,
+        sortField: conf.sortField,
+        sortOrder: conf.sortOrder,
+      })
       runInAction(() => {
-        this.cards = data
+        this.cards = data.items
         this.loading = false
       })
     } catch {
@@ -48,7 +71,9 @@ class KnowledgeStore {
   async loadDirectoryTree() {
     const data = await getDirectoryTree()
     runInAction(() => {
-      this.directoryTree = data
+      this.directoryTreeRaw = data
+      this.rootId = data.length > 0 ? data[0].key : null
+      this.directoryTree = data.length > 0 ? (data[0].children || []) : []
     })
   }
 
@@ -58,19 +83,45 @@ class KnowledgeStore {
 
   clearSearch() {
     this.searchQuery = ''
+    this.searchResults = []
   }
 
-  get filteredCards(): KnowledgeCard[] {
-    const query = this.searchQuery.trim()
-    if (!query) {
-      return this.cards
+  get filteredCards(): KnowledgeItem[] {
+    if (this.searchQuery.trim()) {
+      return this.searchResults
     }
-    const lower = query.toLowerCase()
-    return this.cards.filter(
-      (card) =>
-        card.title.toLowerCase().includes(lower) ||
-        card.author.name.toLowerCase().includes(lower),
-    )
+    return this.cards
+  }
+
+  async searchByKeyword(keyword: string) {
+    const trimmed = keyword.trim()
+    if (!trimmed) {
+      this.clearSearch()
+      return
+    }
+
+    this.searchQuery = trimmed
+
+    if (this.searchTimer) {
+      clearTimeout(this.searchTimer)
+    }
+
+    this.searchLoading = true
+
+    this.searchTimer = setTimeout(async () => {
+      try {
+        const data = await searchKnowledge(trimmed)
+        runInAction(() => {
+          this.searchResults = data.items
+          this.searchLoading = false
+        })
+      } catch {
+        runInAction(() => {
+          this.searchResults = []
+          this.searchLoading = false
+        })
+      }
+    }, 300)
   }
 
   async addNode(parentId: number, dirName: string) {
@@ -81,9 +132,10 @@ class KnowledgeStore {
   async renameNode(dirId: number, dirName: string) {
     await renameDirectoryNode({ dir_id: dirId, dir_name: dirName })
     runInAction(() => {
-      this.directoryTree = this._mapTree(this.directoryTree, (node) =>
+      this.directoryTreeRaw = this._mapTree(this.directoryTreeRaw, (node) =>
         node.key === String(dirId) ? { ...node, title: dirName } : node,
       )
+      this.directoryTree = this.directoryTreeRaw[0]?.children || []
     })
   }
 
@@ -148,7 +200,7 @@ class KnowledgeStore {
       }
       return null
     }
-    return search(this.directoryTree)
+    return search(this.directoryTreeRaw)
   }
 
   getNodePath(key: string): { title: string; key: string }[] {
@@ -166,7 +218,7 @@ class KnowledgeStore {
       }
       return false
     }
-    search(this.directoryTree, [])
+    search(this.directoryTreeRaw, [])
     return path
   }
 
@@ -180,7 +232,7 @@ class KnowledgeStore {
       }
       return false
     }
-    return findChildren(this.directoryTree)
+    return findChildren(this.directoryTreeRaw)
   }
 
   private _nodeExistsInSubtree(parent: TreeNode, targetKey: string): boolean {

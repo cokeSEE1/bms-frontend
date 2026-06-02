@@ -1,5 +1,6 @@
 // src/pages/home/components/KnowledgeWaterfall/style.ts
 import styled from '@emotion/styled'
+import { Link } from 'react-router-dom'
 import {
   COLOR_PRIMARY,
   COLOR_TEXT,
@@ -70,6 +71,23 @@ export const SortTab = styled.button<{ active: boolean }>`
   }
 `
 
+export const SpinWrapper = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  .ant-spin-nested-loading {
+    height: 100%;
+  }
+
+  .ant-spin-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+`
+
 export const CardList = styled.div`
   flex: 1;
   overflow-y: auto;
@@ -86,6 +104,11 @@ export const Card = styled.article`
   background: ${COLOR_BG_CONTAINER};
   border: 1px solid ${COLOR_BORDER_COOL};
   border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: ${COLOR_PRIMARY};
+  }
 `
 
 export const CardTop = styled.div`
@@ -94,10 +117,15 @@ export const CardTop = styled.div`
   gap: 8px;
 `
 
-export const DocIcon = styled.img`
+export const DocIcon = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+  font-size: 18px;
+  color: ${COLOR_TEXT_SECONDARY};
 `
 
 export const CardTitleArea = styled.div`
@@ -108,7 +136,7 @@ export const CardTitleArea = styled.div`
   min-width: 0;
 `
 
-export const CardTitleText = styled.a`
+export const CardTitleText = styled(Link)`
   font-size: 14px;
   font-weight: 600;
   line-height: 22px;

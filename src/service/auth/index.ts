@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react'
 import axios from 'axios'
 import client from '../client'
-import type { UserLogin, UserRegister, UserOut, TokenOut, LogoutOut } from '../types'
+import { authStore } from '../../stores/authStore'
+import type { UserLogin, UserRegister, UserOut, TokenOut, LogoutOut, ChangePasswordRequest, ChangePasswordOut } from '../types'
 
 const extractError = (err: unknown): string => {
   if (axios.isAxiosError(err) && err.response?.data?.detail) {
@@ -38,6 +39,13 @@ interface UseLogoutReturn {
   logout: () => Promise<void>
 }
 
+interface UseChangePasswordReturn {
+  data: ChangePasswordOut | null
+  loading: boolean
+  error: string | null
+  changePassword: (body: ChangePasswordRequest) => Promise<void>
+}
+
 const useLogin = (): UseLoginReturn => {
   const [data, setData] = useState<TokenOut | null>(null)
   const [loading, setLoading] = useState(false)
@@ -47,10 +55,8 @@ const useLogin = (): UseLoginReturn => {
     setLoading(true)
     setError(null)
     try {
-      const res = await client.post<TokenOut>('/auth/login', body)
-      setData(res.data)
-      localStorage.setItem('token', res.data.access_token)
-      localStorage.setItem('username', res.data.user.username)
+      await authStore.login(body)
+      setData({ access_token: authStore.token!, user: authStore.user! })
     } catch (err) {
       const message = extractError(err)
       setError(message)
@@ -93,8 +99,8 @@ const useGetMe = (): UseGetMeReturn => {
     setLoading(true)
     setError(null)
     try {
-      const res = await client.get<UserOut>('/auth/me')
-      setData(res.data)
+      await authStore.fetchMe()
+      setData(authStore.user!)
     } catch (err) {
       const message = extractError(err)
       setError(message)
@@ -115,8 +121,8 @@ const useLogout = (): UseLogoutReturn => {
     setLoading(true)
     setError(null)
     try {
-      const res = await client.post<LogoutOut>('/auth/logout')
-      setData(res.data)
+      await authStore.logout()
+      setData({ message: '退出成功' })
     } catch (err) {
       const message = extractError(err)
       setError(message)
@@ -128,4 +134,26 @@ const useLogout = (): UseLogoutReturn => {
   return { data, loading, error, logout }
 }
 
-export { useLogin, useRegister, useGetMe, useLogout }
+const useChangePassword = (): UseChangePasswordReturn => {
+  const [data, setData] = useState<ChangePasswordOut | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const changePassword = useCallback(async (body: ChangePasswordRequest) => {
+    setLoading(true)
+    setError(null)
+    try {
+      await authStore.changePassword(body)
+      setData({ message: '密码修改成功' })
+    } catch (err) {
+      const message = extractError(err)
+      setError(message)
+      throw new Error(message)
+    }
+    setLoading(false)
+  }, [])
+
+  return { data, loading, error, changePassword }
+}
+
+export { useLogin, useRegister, useGetMe, useLogout, useChangePassword }
